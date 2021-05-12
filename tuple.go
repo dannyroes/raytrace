@@ -28,6 +28,19 @@ func (t Tuple) Add(b Tuple) Tuple {
 	return t
 }
 
+func (t Tuple) Sub(b Tuple) Tuple {
+	t.X -= b.X
+	t.Y -= b.Y
+	t.Z -= b.Z
+	t.W -= b.W
+
+	return t
+}
+
+func (t Tuple) Neg() Tuple {
+	return Vector(0, 0, 0).Sub(t)
+}
+
 func FloatEqual(x, y float64) bool {
 	return math.Abs(x-y) < Epsilon
 }
