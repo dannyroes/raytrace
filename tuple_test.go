@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestFloatEqual(t *testing.T) {
 	a := 0.1
@@ -198,5 +201,160 @@ func TestNegateTuple(t *testing.T) {
 	if !TupleEqual(result, expected) {
 		t.Errorf("Expected %+v, received %+v", expected, result)
 	}
+}
 
+func TestMultiplyTuple(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		mul      float64
+		expected Tuple
+	}{
+		{
+			a:        Tuple{X: 1, Y: -2, Z: 3, W: -4},
+			mul:      3.5,
+			expected: Tuple{X: 3.5, Y: -7, Z: 10.5, W: -14},
+		},
+		{
+			a:        Tuple{X: 1, Y: -2, Z: 3, W: -4},
+			mul:      0.5,
+			expected: Tuple{X: 0.5, Y: -1, Z: 1.5, W: -2},
+		},
+	}
+
+	for _, c := range cases {
+		result := c.a.Mul(c.mul)
+		if !TupleEqual(result, c.expected) {
+			t.Errorf("Expected %+v, received %+v", c.expected, result)
+		}
+	}
+}
+
+func TestDivideTuple(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		div      float64
+		expected Tuple
+	}{
+		{
+			a:        Tuple{X: 1, Y: -2, Z: 3, W: -4},
+			div:      2,
+			expected: Tuple{X: 0.5, Y: -1, Z: 1.5, W: -2},
+		},
+	}
+
+	for _, c := range cases {
+		result := c.a.Div(c.div)
+		if !TupleEqual(result, c.expected) {
+			t.Errorf("Expected %+v, received %+v", c.expected, result)
+		}
+	}
+}
+
+func TestMagnitudeVector(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		expected float64
+	}{
+		{
+			a:        Vector(1, 0, 0),
+			expected: 1,
+		},
+		{
+			a:        Vector(0, 1, 0),
+			expected: 1,
+		},
+		{
+			a:        Vector(0, 0, 1),
+			expected: 1,
+		},
+		{
+			a:        Vector(1, 2, 3),
+			expected: math.Sqrt(14),
+		},
+		{
+			a:        Vector(-1, -2, -3),
+			expected: math.Sqrt(14),
+		},
+	}
+
+	for _, c := range cases {
+		result := c.a.Magnitude()
+		if !FloatEqual(result, c.expected) {
+			t.Errorf("Expected %+f, received %+f", c.expected, result)
+		}
+	}
+}
+
+func TestNormalizeVector(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		expected Tuple
+	}{
+		{
+			a:        Vector(4, 0, 0),
+			expected: Vector(1, 0, 0),
+		},
+		{
+			a:        Vector(1, 2, 3),
+			expected: Vector(1/math.Sqrt(14), 2/math.Sqrt(14), 3/math.Sqrt(14)),
+		},
+	}
+
+	for _, c := range cases {
+		result := c.a.Normalize()
+		if !TupleEqual(result, c.expected) {
+			t.Errorf("Expected %+v, received %+v", c.expected, result)
+		}
+
+		if !FloatEqual(result.Magnitude(), 1) {
+			t.Errorf("Normalized magnitude incorrect. Expected 1.0, received %+v", result.Magnitude())
+		}
+	}
+}
+
+func TestDotVector(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		b        Tuple
+		expected float64
+	}{
+		{
+			a:        Vector(1, 2, 3),
+			b:        Vector(2, 3, 4),
+			expected: 20,
+		},
+	}
+
+	for _, c := range cases {
+		result := Dot(c.a, c.b)
+		if !FloatEqual(result, c.expected) {
+			t.Errorf("Expected %+v, received %+v", c.expected, result)
+		}
+	}
+}
+
+func TestCrossVector(t *testing.T) {
+	cases := []struct {
+		a        Tuple
+		b        Tuple
+		expected Tuple
+	}{
+		{
+			a:        Vector(1, 2, 3),
+			b:        Vector(2, 3, 4),
+			expected: Vector(-1, 2, -1),
+		},
+	}
+
+	for _, c := range cases {
+		result := Cross(c.a, c.b)
+		if !TupleEqual(result, c.expected) {
+			t.Errorf("Expected %+v, received %+v", c.expected, result)
+		}
+
+		result = Cross(c.b, c.a)
+		if !TupleEqual(result, c.expected.Neg()) {
+			t.Errorf("Expected %+v, received %+v", c.expected.Neg(), result)
+		}
+	}
 }

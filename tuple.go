@@ -41,6 +41,34 @@ func (t Tuple) Neg() Tuple {
 	return Vector(0, 0, 0).Sub(t)
 }
 
+func (t Tuple) Mul(m float64) Tuple {
+	t.X *= m
+	t.Y *= m
+	t.Z *= m
+	t.W *= m
+
+	return t
+}
+
+func (t Tuple) Div(m float64) Tuple {
+	t.X /= m
+	t.Y /= m
+	t.Z /= m
+	t.W /= m
+
+	return t
+}
+
+func (t Tuple) Magnitude() float64 {
+	return math.Sqrt(math.Pow(t.X, 2) + math.Pow(t.Y, 2) + math.Pow(t.Z, 2))
+}
+
+func (t Tuple) Normalize() Tuple {
+	m := t.Magnitude()
+
+	return t.Div(m)
+}
+
 func FloatEqual(x, y float64) bool {
 	return math.Abs(x-y) < Epsilon
 }
@@ -68,4 +96,19 @@ func TupleEqual(a, b Tuple) bool {
 		FloatEqual(a.Y, b.Y) &&
 		FloatEqual(a.Z, b.Z) &&
 		FloatEqual(a.W, b.W)
+}
+
+func Dot(a, b Tuple) float64 {
+	return a.X*b.X +
+		a.Y*b.Y +
+		a.Z*b.Z +
+		a.W*b.W
+}
+
+func Cross(a, b Tuple) Tuple {
+	return Vector(
+		a.Y*b.Z-a.Z*b.Y,
+		a.Z*b.X-a.X*b.Z,
+		a.X*b.Y-a.Y*b.X,
+	)
 }
