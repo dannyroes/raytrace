@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+)
 
 type Environment struct {
 	Gravity Tuple
@@ -13,12 +16,24 @@ type Projectile struct {
 }
 
 func main() {
-	e := Environment{Gravity: Vector(0, -0.1, 0), Wind: Vector(-0.01, 0, 0)}
+	var canvasHeight, canvasWidth int
+	canvasHeight = 550
+	canvasWidth = 900
+	canvas := Canvas(canvasWidth, canvasHeight)
 
-	p := Projectile{Position: Point(0, 1, 0), Velocity: Vector(1, 1, 0).Normalize().Mul(5)}
+	projColour := Colour(1, 0, 0)
+	e := Environment{Gravity: Vector(0, -0.08, 0), Wind: Vector(-0.05, 0, 0)}
+
+	p := Projectile{Position: Point(0, 1, 0), Velocity: Vector(1.4, 1.8, 0).Normalize().Mul(11.25)}
 	ticks := 0
 	for {
-		fmt.Printf("%+v\n", p.Position)
+		posX := int(p.Position.X)
+		posY := canvasHeight - int(p.Position.Y)
+
+		if posX > canvasWidth || posX < 0 || posY > canvasHeight || posY < 0 {
+			break
+		}
+		canvas.WritePixel(posX, posY, projColour)
 
 		if p.Position.Y < 0.0 || FloatEqual(p.Position.Y, 0) {
 			break
@@ -26,6 +41,8 @@ func main() {
 		ticks++
 		p = tick(e, p)
 	}
+
+	ioutil.WriteFile("proj.ppm", []byte(canvas.ToPPM()), 0755)
 
 	fmt.Printf("Completed after %d ticks", ticks)
 }
