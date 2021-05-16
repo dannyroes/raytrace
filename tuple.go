@@ -2,7 +2,7 @@ package main
 
 import "math"
 
-var Epsilon = math.Nextafter(1.0, 2.0) - 1.0
+var Epsilon = 0.00001
 
 type Tuple struct {
 	X float64
