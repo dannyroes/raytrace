@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 )
 
 type Environment struct {
@@ -16,13 +17,21 @@ type Projectile struct {
 }
 
 func main() {
-	t := Point(4, 7, 2)
-	x := IdentityMatrix().MultiplyTuple(t)
+	canvas := Canvas(500, 500)
 
-	m := IdentityMatrix()
-	m[0][0] = 2
-	y := m.MultiplyTuple(t)
-	fmt.Println(x, y)
+	rad := math.Pi * 2
+
+	start := Point(0, 225, 0)
+	colour := Colour(1, 1, 1)
+
+	for x := 0; x < 12; x++ {
+		point := IdentityMatrix().RotateZ(rad/12*float64(x)).Translate(250, 250, 0).MultiplyTuple(start)
+
+		fmt.Println(point)
+		canvas.WritePixel(int(point.X), int(point.Y), colour)
+	}
+
+	ioutil.WriteFile("proj.ppm", []byte(canvas.ToPPM()), 0755)
 }
 
 func runSim() {
