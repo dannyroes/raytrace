@@ -16,6 +16,16 @@ type Projectile struct {
 }
 
 func main() {
+	t := Point(4, 7, 2)
+	x := IdentityMatrix.MultiplyTuple(t)
+
+	m := IdentityMatrix
+	m[0][0] = 2
+	y := m.MultiplyTuple(t)
+	fmt.Println(x, y)
+}
+
+func runSim() {
 	var canvasHeight, canvasWidth int
 	canvasHeight = 550
 	canvasWidth = 900
