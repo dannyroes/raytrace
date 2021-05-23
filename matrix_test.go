@@ -67,6 +67,34 @@ func TestMatrixBasics(t *testing.T) {
 	}
 }
 
+func TestCopy(t *testing.T) {
+	a := Matrix{
+		{1, 2, 3},
+		{4, 5, 6},
+	}
+
+	b := Matrix{
+		{1, 2, 3},
+		{4, 5, 6},
+	}
+
+	if !a.Equals(b) {
+		t.Error("a != b")
+	}
+
+	c := a.Copy()
+
+	if !c.Equals(b) {
+		t.Error("c != b")
+	}
+
+	c[0][2] = 9
+
+	if !a.Equals(b) {
+		t.Error("a != b after c mod")
+	}
+}
+
 func TestCompareMatrix(t *testing.T) {
 	cases := []struct {
 		a     Matrix
@@ -145,7 +173,7 @@ func TestMultiplyMatrix(t *testing.T) {
 				{2, 4, 8, 16},
 				{4, 8, 16, 32},
 			},
-			b: IdentityMatrix,
+			b: IdentityMatrix(),
 			expected: Matrix{
 				{0, 1, 2, 4},
 				{1, 2, 4, 8},
@@ -190,7 +218,7 @@ func TestMultiplyMatrixTuple(t *testing.T) {
 			},
 		},
 		{
-			a: IdentityMatrix,
+			a: IdentityMatrix(),
 			b: Tuple{
 				X: 1,
 				Y: 2,
@@ -234,8 +262,8 @@ func TestTransposeMatrix(t *testing.T) {
 			},
 		},
 		{
-			a:        IdentityMatrix,
-			expected: IdentityMatrix,
+			a:        IdentityMatrix(),
+			expected: IdentityMatrix(),
 		},
 	}
 

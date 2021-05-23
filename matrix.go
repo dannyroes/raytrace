@@ -6,11 +6,25 @@ import (
 
 type Matrix [][]float64
 
-var IdentityMatrix = Matrix{
-	{1, 0, 0, 0},
-	{0, 1, 0, 0},
-	{0, 0, 1, 0},
-	{0, 0, 0, 1},
+func IdentityMatrix() Matrix {
+	return Matrix{
+		{1, 0, 0, 0},
+		{0, 1, 0, 0},
+		{0, 0, 1, 0},
+		{0, 0, 0, 1},
+	}
+}
+
+func (m Matrix) Copy() Matrix {
+	c := make(Matrix, len(m))
+
+	for x, row := range m {
+		newRow := make([]float64, len(row))
+		copy(newRow, row)
+		c[x] = newRow
+	}
+
+	return c
 }
 
 func (m Matrix) Equals(b Matrix) bool {
@@ -32,10 +46,9 @@ func (m Matrix) Equals(b Matrix) bool {
 }
 
 func (m Matrix) Multiply(b Matrix) Matrix {
-	r := make(Matrix, 4)
+	r := m.Copy()
 
 	for x := 0; x < 4; x++ {
-		r[x] = make([]float64, 4)
 		for y := 0; y < 4; y++ {
 			r[x][y] = m[x][0]*b[0][y] +
 				m[x][1]*b[1][y] +
@@ -57,11 +70,7 @@ func (m Matrix) MultiplyTuple(t Tuple) Tuple {
 }
 
 func (m Matrix) Transpose() Matrix {
-	result := make(Matrix, len(m))
-
-	for x := 0; x < len(m); x++ {
-		result[x] = make([]float64, len(m))
-	}
+	result := m.Copy()
 
 	for x, row := range m {
 		for y, val := range row {
@@ -87,14 +96,11 @@ func (m Matrix) Determinant() float64 {
 }
 
 func (m Matrix) Submatrix(row, column int) Matrix {
-	result := make(Matrix, len(m))
-	copy(result, m)
+	result := m.Copy()
 	result = append(result[:row], result[row+1:]...)
 
 	for x, row := range result {
-		newRow := make([]float64, len(row))
-		copy(newRow, row)
-		result[x] = append(newRow[:column], newRow[column+1:]...)
+		result[x] = append(row[:column], row[column+1:]...)
 	}
 
 	return result
@@ -126,10 +132,7 @@ func (m Matrix) Invert() (Matrix, error) {
 		return nil, errors.New("matrix is not invertible")
 	}
 
-	result := make(Matrix, len(m))
-	for x := range m {
-		result[x] = make([]float64, len(m))
-	}
+	result := m.Copy()
 
 	det := m.Determinant()
 	for x, row := range m {
@@ -149,4 +152,28 @@ func (m Matrix) rowToTuple(x int) Tuple {
 		Z: m[x][2],
 		W: m[x][3],
 	}
+}
+
+func (m Matrix) Translate(x, y, z float64) Matrix {
+	return Translation(x, y, z).Multiply(m)
+}
+
+func (m Matrix) Scale(x, y, z float64) Matrix {
+	return Scaling(x, y, z).Multiply(m)
+}
+
+func (m Matrix) RotateX(r float64) Matrix {
+	return RotateX(r).Multiply(m)
+}
+
+func (m Matrix) RotateY(r float64) Matrix {
+	return RotateY(r).Multiply(m)
+}
+
+func (m Matrix) RotateZ(r float64) Matrix {
+	return RotateZ(r).Multiply(m)
+}
+
+func (m Matrix) Shear(xy, xz, yx, yz, zx, zy float64) Matrix {
+	return Shear(xy, xz, yx, yz, zx, zy).Multiply(m)
 }

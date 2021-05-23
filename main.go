@@ -17,9 +17,9 @@ type Projectile struct {
 
 func main() {
 	t := Point(4, 7, 2)
-	x := IdentityMatrix.MultiplyTuple(t)
+	x := IdentityMatrix().MultiplyTuple(t)
 
-	m := IdentityMatrix
+	m := IdentityMatrix()
 	m[0][0] = 2
 	y := m.MultiplyTuple(t)
 	fmt.Println(x, y)
