@@ -17,7 +17,7 @@ type Projectile struct {
 }
 
 func main() {
-	drawCircle()
+	drawCircleSingleOrigin()
 }
 
 func drawCircle() {
@@ -32,6 +32,28 @@ func drawCircle() {
 
 			if h.Object.Id == 1 {
 				canvas.WritePixel(x, y, colour)
+			}
+		}
+	}
+
+	ioutil.WriteFile("proj.ppm", []byte(canvas.ToPPM()), 0755)
+}
+
+func drawCircleSingleOrigin() {
+	canvas := Canvas(500, 500)
+	wallZ := 200.0
+	rayOrigin := Point(0, 0, -500)
+	colour := Colour(1, 0.5, 0.3)
+	sphere := Sphere(1).SetTransform(Scaling(100, 75, 100).RotateZ(2.5))
+
+	for x := -250; x < 250; x++ {
+		for y := -250; y < 250; y++ {
+			v := Point(float64(x), float64(y), wallZ).Sub(rayOrigin).Normalize()
+			ray := Ray(rayOrigin, v)
+			h := sphere.Intersects(ray).Hit()
+
+			if h.Object.Id == 1 {
+				canvas.WritePixel(x+250, y+250, colour)
 			}
 		}
 	}
