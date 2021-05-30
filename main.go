@@ -17,6 +17,29 @@ type Projectile struct {
 }
 
 func main() {
+	drawCircle()
+}
+
+func drawCircle() {
+	canvas := Canvas(500, 500)
+	colour := Colour(1, 0.5, 0.3)
+	sphere := Sphere(1).SetTransform(Scaling(200, 100, 200).RotateZ(2.5).Translate(250, 250, 250))
+
+	for x := 0; x < canvas.Width; x++ {
+		for y := 0; y < canvas.Height; y++ {
+			ray := Ray(Point(float64(x), float64(y), -500), Vector(0, 0, 1))
+			h := sphere.Intersects(ray).Hit()
+
+			if h.Object.Id == 1 {
+				canvas.WritePixel(x, y, colour)
+			}
+		}
+	}
+
+	ioutil.WriteFile("proj.ppm", []byte(canvas.ToPPM()), 0755)
+}
+
+func drawClock() {
 	canvas := Canvas(500, 500)
 
 	rad := math.Pi * 2
