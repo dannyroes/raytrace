@@ -36,3 +36,12 @@ func (s SphereType) SetTransform(m Matrix) SphereType {
 	s.Transform = m
 	return s
 }
+
+func (s SphereType) NormalAt(p Tuple) Tuple {
+	objectPoint := s.Transform.Invert().MultiplyTuple(p)
+	objectNormal := objectPoint.Sub(Point(0, 0, 0))
+	worldNormal := s.Transform.Invert().Transpose().MultiplyTuple(objectNormal)
+	worldNormal.W = 0
+
+	return worldNormal.Normalize()
+}

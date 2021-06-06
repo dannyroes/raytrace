@@ -112,3 +112,7 @@ func Cross(a, b Tuple) Tuple {
 		a.X*b.Y-a.Y*b.X,
 	)
 }
+
+func (v Tuple) Reflect(n Tuple) Tuple {
+	return v.Sub(n.Mul(2).Mul(Dot(v, n)))
+}

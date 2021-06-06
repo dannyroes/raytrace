@@ -358,3 +358,29 @@ func TestCrossVector(t *testing.T) {
 		}
 	}
 }
+
+func TestReflect(t *testing.T) {
+	cases := []struct {
+		v        Tuple
+		n        Tuple
+		expected Tuple
+	}{
+		{
+			v:        Vector(1, -1, 0),
+			n:        Vector(0, 1, 0),
+			expected: Vector(1, 1, 0),
+		},
+		{
+			v:        Vector(0, -1, 0),
+			n:        Vector(math.Sqrt(2)/2, math.Sqrt(2)/2, 0),
+			expected: Vector(1, 0, 0),
+		},
+	}
+
+	for _, tc := range cases {
+		result := tc.v.Reflect(tc.n)
+		if !TupleEqual(result, tc.expected) {
+			t.Errorf("Expected %+v, received %+v", tc.expected, result)
+		}
+	}
+}
