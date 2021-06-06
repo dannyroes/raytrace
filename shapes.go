@@ -12,10 +12,8 @@ func Sphere(id int) SphereType {
 }
 
 func (s SphereType) Intersects(r RayType) IntersectionList {
-	inverse, err := s.Transform.Invert()
-	if err != nil {
-		return IntersectionList{}
-	}
+	inverse := s.Transform.Invert()
+
 	r = r.Transform(inverse)
 	sphereRayVector := r.Origin.Sub(Point(0, 0, 0))
 

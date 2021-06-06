@@ -1,9 +1,5 @@
 package main
 
-import (
-	"errors"
-)
-
 type Matrix [][]float64
 
 func IdentityMatrix() Matrix {
@@ -127,9 +123,9 @@ func (m Matrix) Invertible() bool {
 	return !FloatEqual(0.0, m.Determinant())
 }
 
-func (m Matrix) Invert() (Matrix, error) {
+func (m Matrix) Invert() Matrix {
 	if !m.Invertible() {
-		return nil, errors.New("matrix is not invertible")
+		return nil
 	}
 
 	result := m.Copy()
@@ -142,7 +138,7 @@ func (m Matrix) Invert() (Matrix, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }
 
 func (m Matrix) rowToTuple(x int) Tuple {

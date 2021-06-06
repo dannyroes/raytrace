@@ -553,11 +553,7 @@ func TestInvert(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result, err := tc.a.Invert()
-
-		if err != nil {
-			t.Errorf("Encountered error %s", err)
-		}
+		result := tc.a.Invert()
 
 		if !tc.expected.Equals(result) {
 			t.Errorf("Expected: %+v, received: %+v", tc.expected, result)
@@ -589,7 +585,7 @@ func TestMultiplyInverse(t *testing.T) {
 	for _, tc := range cases {
 		c := tc.a.Multiply(tc.b)
 
-		i, _ := tc.b.Invert()
+		i := tc.b.Invert()
 		d := c.Multiply(i)
 
 		if !d.Equals(tc.a) {

@@ -42,7 +42,7 @@ func TestTranslate(t *testing.T) {
 		translate := Translation(tc.x, tc.y, tc.z)
 
 		if tc.invert {
-			translate, _ = translate.Invert()
+			translate = translate.Invert()
 		}
 
 		result := translate.MultiplyTuple(tc.p)
@@ -96,7 +96,7 @@ func TestScale(t *testing.T) {
 		scale := Scaling(tc.x, tc.y, tc.z)
 
 		if tc.invert {
-			scale, _ = scale.Invert()
+			scale = scale.Invert()
 		}
 
 		result := scale.MultiplyTuple(tc.p)
@@ -133,7 +133,7 @@ func TestRotateX(t *testing.T) {
 
 	for _, tc := range cases {
 		if tc.invert {
-			tc.r, _ = tc.r.Invert()
+			tc.r = tc.r.Invert()
 		}
 		result := tc.r.MultiplyTuple(tc.p)
 		if !TupleEqual(result, tc.expected) {
@@ -163,7 +163,7 @@ func TestRotateY(t *testing.T) {
 
 	for _, tc := range cases {
 		if tc.invert {
-			tc.r, _ = tc.r.Invert()
+			tc.r = tc.r.Invert()
 		}
 		result := tc.r.MultiplyTuple(tc.p)
 		if !TupleEqual(result, tc.expected) {
@@ -193,7 +193,7 @@ func TestRotateZ(t *testing.T) {
 
 	for _, tc := range cases {
 		if tc.invert {
-			tc.r, _ = tc.r.Invert()
+			tc.r = tc.r.Invert()
 		}
 		result := tc.r.MultiplyTuple(tc.p)
 		if !TupleEqual(result, tc.expected) {
