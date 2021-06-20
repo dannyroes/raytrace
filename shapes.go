@@ -5,10 +5,11 @@ import "math"
 type SphereType struct {
 	Id        int
 	Transform Matrix
+	Material  MaterialType
 }
 
 func Sphere(id int) SphereType {
-	return SphereType{Id: id, Transform: IdentityMatrix()}
+	return SphereType{Id: id, Transform: IdentityMatrix(), Material: Material()}
 }
 
 func (s SphereType) Intersects(r RayType) IntersectionList {

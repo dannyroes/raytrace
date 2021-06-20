@@ -1,5 +1,9 @@
 package main
 
+var (
+	Black = Colour(0, 0, 0)
+)
+
 type ColourTuple struct {
 	Tuple
 }

@@ -115,3 +115,19 @@ func TestSphereNormal(t *testing.T) {
 		}
 	}
 }
+
+func TestSphereMaterial(t *testing.T) {
+	s := Sphere(1)
+	m := Material()
+
+	if s.Material != m {
+		t.Errorf("Material mismatch expected: %+v received: %+v", m, s.Material)
+	}
+
+	m.Ambient = 1
+	s.Material = m
+
+	if s.Material != m {
+		t.Errorf("Material mismatch expected: %+v received: %+v", m, s.Material)
+	}
+}
