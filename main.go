@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"time"
 )
 
 type Environment struct {
@@ -42,9 +43,14 @@ func drawCircle() {
 func drawCircleSingleOrigin() {
 	canvas := Canvas(500, 500)
 	wallZ := 200.0
-	rayOrigin := Point(0, 0, -500)
-	colour := Colour(1, 0.5, 0.3)
-	sphere := Sphere(1).SetTransform(Scaling(100, 75, 100).RotateZ(2.5))
+	rayOrigin := Point(0, 0, -20)
+	sphere := Sphere(1).SetTransform(IdentityMatrix().Scale(10, 10, 10))
+	sphere.Material.Colour = Colour(1, 0.2, 1)
+	sphere.Material.Shininess = 50
+
+	light := PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
+
+	start := time.Now()
 
 	for x := -250; x < 250; x++ {
 		for y := -250; y < 250; y++ {
@@ -52,13 +58,20 @@ func drawCircleSingleOrigin() {
 			ray := Ray(rayOrigin, v)
 			h := sphere.Intersects(ray).Hit()
 
-			if h.Object.Id == 1 {
+			if h.Object.Id > 0 {
+				p := ray.Position(h.T)
+				normal := h.Object.NormalAt(p)
+				eye := ray.Direction.Neg()
+				colour := Lighting(h.Object.Material, light, p, eye, normal)
 				canvas.WritePixel(x+250, y+250, colour)
 			}
 		}
 	}
 
-	ioutil.WriteFile("proj.ppm", []byte(canvas.ToPPM()), 0755)
+	elapsed := time.Since(start)
+	fmt.Println(elapsed)
+
+	ioutil.WriteFile("output/proj.ppm", []byte(canvas.ToPPM()), 0755)
 }
 
 func drawClock() {
