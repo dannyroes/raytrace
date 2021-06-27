@@ -8,8 +8,23 @@ type SphereType struct {
 	Material  MaterialType
 }
 
+type Object interface {
+	GetId() int
+	GetMaterial() MaterialType
+	Intersects(RayType) IntersectionList
+	NormalAt(Tuple) Tuple
+}
+
 func Sphere(id int) SphereType {
 	return SphereType{Id: id, Transform: IdentityMatrix(), Material: Material()}
+}
+
+func (s SphereType) GetId() int {
+	return s.Id
+}
+
+func (s SphereType) GetMaterial() MaterialType {
+	return s.Material
 }
 
 func (s SphereType) Intersects(r RayType) IntersectionList {

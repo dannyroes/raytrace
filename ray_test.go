@@ -69,8 +69,8 @@ func TestSphereIntersect(t *testing.T) {
 				t.Errorf("Result index %d mismatch expected %d, received %d", i, len(tc.expected), len(result))
 			}
 
-			if result[i].Object.Id != tc.s.Id {
-				t.Errorf("Result index %d id mismatch expected %d, received %d", i, tc.s.Id, result[i].Object.Id)
+			if result[i].Object.GetId() != tc.s.Id {
+				t.Errorf("Result index %d id mismatch expected %d, received %d", i, tc.s.Id, result[i].Object.GetId())
 			}
 		}
 	}

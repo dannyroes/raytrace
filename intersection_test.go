@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestIntersectionType(t *testing.T) {
 	cases := []struct {
@@ -20,8 +22,8 @@ func TestIntersectionType(t *testing.T) {
 			t.Errorf("T not equal expected %f received %F", tc.t, i.T)
 		}
 
-		if tc.s.Id != i.Object.Id {
-			t.Errorf("Object ID not equal expected %d received %d", tc.s.Id, i.Object.Id)
+		if tc.s.Id != i.Object.GetId() {
+			t.Errorf("Object ID not equal expected %d received %d", tc.s.Id, i.Object.GetId())
 		}
 	}
 }
@@ -86,8 +88,71 @@ func TestHit(t *testing.T) {
 
 	for _, tc := range cases {
 		hit := tc.l.Hit()
-		if tc.expected.Object.Id != hit.Object.Id || tc.expected.T != hit.T {
+		if tc.expected.Object.GetId() != hit.Object.GetId() || tc.expected.T != hit.T {
 			t.Errorf("Hit does not match expected %+v received %+v", tc.expected, hit)
+		}
+	}
+}
+
+func TestPrepareComputations(t *testing.T) {
+	defaultSphere := Sphere(1)
+	tests := []struct {
+		r        RayType
+		o        Object
+		i        IntersectionType
+		expected Computations
+	}{
+		{
+			r: Ray(Point(0, 0, -5), Vector(0, 0, 1)),
+			o: defaultSphere,
+			i: Intersection(4, defaultSphere),
+			expected: Computations{
+				T:       4,
+				Object:  defaultSphere,
+				Point:   Point(0, 0, -1),
+				EyeV:    Vector(0, 0, -1),
+				NormalV: Vector(0, 0, -1),
+			},
+		},
+		{
+			r: Ray(Point(0, 0, 0), Vector(0, 0, 1)),
+			o: defaultSphere,
+			i: Intersection(1, defaultSphere),
+			expected: Computations{
+				T:       1,
+				Object:  defaultSphere,
+				Point:   Point(0, 0, 1),
+				EyeV:    Vector(0, 0, -1),
+				NormalV: Vector(0, 0, -1),
+				Inside:  true,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		comp := tc.i.PrepareComputations(tc.r)
+		if comp.T != tc.expected.T {
+			t.Errorf("T value doesn't match expected: %f received: %f", tc.expected.T, comp.T)
+		}
+
+		if comp.Object.GetId() != tc.expected.Object.GetId() {
+			t.Errorf("Object doesn't match expected: %+v received: %+v", tc.expected.Object, comp.Object)
+		}
+
+		if !TupleEqual(comp.Point, tc.expected.Point) {
+			t.Errorf("Point doesn't match expected: %+v received: %+v", tc.expected.Point, comp.Point)
+		}
+
+		if !TupleEqual(comp.EyeV, tc.expected.EyeV) {
+			t.Errorf("EyeV value doesn't match expected: %+v received: %+v", tc.expected.EyeV, comp.EyeV)
+		}
+
+		if !TupleEqual(comp.NormalV, tc.expected.NormalV) {
+			t.Errorf("NormalV value doesn't match expected: %+v received: %+v", tc.expected.NormalV, comp.NormalV)
+		}
+
+		if comp.Inside != tc.expected.Inside {
+			t.Errorf("Inside value doesn't match expected: %v received: %v", tc.expected.Inside, comp.Inside)
 		}
 	}
 }
