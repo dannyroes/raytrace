@@ -313,3 +313,54 @@ func TestMultiple(t *testing.T) {
 		t.Errorf("Chained transform expected %v received %v", Point(15, 0, 7), result)
 	}
 }
+
+func TestViewTransform(t *testing.T) {
+	cases := []struct {
+		result   Matrix
+		expected Matrix
+	}{
+		{
+			result: ViewTransform(
+				Point(0, 0, 0),
+				Point(0, 0, -1),
+				Vector(0, 1, 0),
+			),
+			expected: IdentityMatrix(),
+		},
+		{
+			result: ViewTransform(
+				Point(0, 0, 0),
+				Point(0, 0, 1),
+				Vector(0, 1, 0),
+			),
+			expected: Scaling(-1, 1, -1),
+		},
+		{
+			result: ViewTransform(
+				Point(0, 0, 8),
+				Point(0, 0, 0),
+				Vector(0, 1, 0),
+			),
+			expected: Translation(0, 0, -8),
+		},
+		{
+			result: ViewTransform(
+				Point(1, 3, 2),
+				Point(4, -2, 8),
+				Vector(1, 1, 0),
+			),
+			expected: Matrix{
+				{-0.50709, 0.50709, 0.67612, -2.36643},
+				{0.76772, 0.60609, 0.12122, -2.82843},
+				{-0.35857, 0.59761, -0.71714, 0},
+				{0, 0, 0, 1},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		if !tc.result.Equals(tc.expected) {
+			t.Errorf("expected %+v, received %+v", tc.expected, tc.result)
+		}
+	}
+}

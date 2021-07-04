@@ -26,7 +26,7 @@ func TestRayPosition(t *testing.T) {
 
 func TestSphereIntersect(t *testing.T) {
 	cases := []struct {
-		s        SphereType
+		s        *SphereType
 		r        RayType
 		expected []float64
 	}{

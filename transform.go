@@ -69,3 +69,18 @@ func Shear(xy, xz, yx, yz, zx, zy float64) Matrix {
 
 	return m
 }
+
+func ViewTransform(from, to, up Tuple) Matrix {
+	forward := to.Sub(from).Normalize()
+	left := Cross(forward, up.Normalize())
+	trueUp := Cross(left, forward)
+
+	orientation := Matrix{
+		{left.X, left.Y, left.Z, 0},
+		{trueUp.X, trueUp.Y, trueUp.Z, 0},
+		{-1 * forward.X, -1 * forward.Y, -1 * forward.Z, 0},
+		{0, 0, 0, 1},
+	}
+
+	return orientation.Multiply(Translation(-1*from.X, -1*from.Y, -1*from.Z))
+}

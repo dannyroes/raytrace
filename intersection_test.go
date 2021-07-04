@@ -6,7 +6,7 @@ import (
 
 func TestIntersectionType(t *testing.T) {
 	cases := []struct {
-		s SphereType
+		s *SphereType
 		t float64
 	}{
 		{
@@ -73,7 +73,7 @@ func TestHit(t *testing.T) {
 				Intersection(-2, s),
 				Intersection(-1, s),
 			),
-			expected: IntersectionType{},
+			expected: IntersectionType{T: -1},
 		},
 		{
 			l: Intersections(
@@ -88,6 +88,12 @@ func TestHit(t *testing.T) {
 
 	for _, tc := range cases {
 		hit := tc.l.Hit()
+		if hit.Object == nil {
+			if tc.expected.Object != nil {
+				t.Errorf("Hit does not match expected %+v received %+v", tc.expected, hit)
+			}
+			continue
+		}
 		if tc.expected.Object.GetId() != hit.Object.GetId() || tc.expected.T != hit.T {
 			t.Errorf("Hit does not match expected %+v received %+v", tc.expected, hit)
 		}

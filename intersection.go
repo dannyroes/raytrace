@@ -23,7 +23,7 @@ func (l IntersectionList) Hit() IntersectionType {
 			return i
 		}
 	}
-	return IntersectionType{}
+	return IntersectionType{T: -1}
 }
 
 func (l IntersectionList) Sort() IntersectionList {

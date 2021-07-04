@@ -7,7 +7,7 @@ import (
 
 func TestSphereTransform(t *testing.T) {
 	cases := []struct {
-		s        SphereType
+		s        *SphereType
 		expected Matrix
 	}{
 		{
@@ -15,7 +15,7 @@ func TestSphereTransform(t *testing.T) {
 			expected: IdentityMatrix(),
 		},
 		{
-			s:        Sphere(1).SetTransform(Translation(2, 3, 4)),
+			s:        sphereWithTransform(Translation(2, 3, 4)),
 			expected: Translation(2, 3, 4),
 		},
 	}
@@ -29,12 +29,12 @@ func TestSphereTransform(t *testing.T) {
 
 func TestSphereIntersection(t *testing.T) {
 	cases := []struct {
-		s        SphereType
+		s        *SphereType
 		r        RayType
 		expected IntersectionList
 	}{
 		{
-			s: Sphere(1).SetTransform(Scaling(2, 2, 2)),
+			s: sphereWithTransform(Scaling(2, 2, 2)),
 			r: Ray(Point(0, 0, -5), Vector(0, 0, 1)),
 			expected: Intersections(
 				Intersection(3, Sphere(1)),
@@ -42,7 +42,7 @@ func TestSphereIntersection(t *testing.T) {
 			),
 		},
 		{
-			s:        Sphere(1).SetTransform(Translation(5, 0, 0)),
+			s:        sphereWithTransform(Translation(5, 0, 0)),
 			r:        Ray(Point(0, 0, -5), Vector(0, 0, 1)),
 			expected: Intersections(),
 		},
@@ -67,7 +67,7 @@ func TestSphereNormal(t *testing.T) {
 	angle := math.Sqrt(3) / 3.0
 
 	cases := []struct {
-		s        SphereType
+		s        *SphereType
 		p        Tuple
 		expected Tuple
 	}{
@@ -92,12 +92,12 @@ func TestSphereNormal(t *testing.T) {
 			expected: Vector(angle, angle, angle),
 		},
 		{
-			s:        Sphere(1).SetTransform(IdentityMatrix().Translate(0, 1, 0)),
+			s:        sphereWithTransform(IdentityMatrix().Translate(0, 1, 0)),
 			p:        Point(0, 1.70711, -0.70711),
 			expected: Vector(0, 0.70711, -0.70711),
 		},
 		{
-			s:        Sphere(1).SetTransform(IdentityMatrix().RotateZ(math.Pi/5).Scale(1, 0.5, 1)),
+			s:        sphereWithTransform(IdentityMatrix().RotateZ(math.Pi/5).Scale(1, 0.5, 1)),
 			p:        Point(0, math.Sqrt(2)/2, -1*math.Sqrt(2)/2),
 			expected: Vector(0, 0.97014, -0.24254),
 		},
@@ -130,4 +130,10 @@ func TestSphereMaterial(t *testing.T) {
 	if s.Material != m {
 		t.Errorf("Material mismatch expected: %+v received: %+v", m, s.Material)
 	}
+}
+
+func sphereWithTransform(t Matrix) *SphereType {
+	s := Sphere(1)
+	s.SetTransform(t)
+	return s
 }

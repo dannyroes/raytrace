@@ -24,7 +24,8 @@ func main() {
 func drawCircle() {
 	canvas := Canvas(500, 500)
 	colour := Colour(1, 0.5, 0.3)
-	sphere := Sphere(1).SetTransform(Scaling(200, 100, 200).RotateZ(2.5).Translate(250, 250, 250))
+	sphere := Sphere(1)
+	sphere.SetTransform(Scaling(200, 100, 200).RotateZ(2.5).Translate(250, 250, 250))
 
 	for x := 0; x < canvas.Width; x++ {
 		for y := 0; y < canvas.Height; y++ {
@@ -44,7 +45,8 @@ func drawCircleSingleOrigin() {
 	canvas := Canvas(500, 500)
 	wallZ := 200.0
 	rayOrigin := Point(0, 0, -20)
-	sphere := Sphere(1).SetTransform(IdentityMatrix().Scale(10, 10, 10))
+	sphere := Sphere(1)
+	sphere.SetTransform(IdentityMatrix().Scale(10, 10, 10))
 	sphere.Material.Colour = Colour(1, 0.2, 1)
 	sphere.Material.Shininess = 50
 

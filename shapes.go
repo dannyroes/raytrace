@@ -11,23 +11,28 @@ type SphereType struct {
 type Object interface {
 	GetId() int
 	GetMaterial() MaterialType
+	SetMaterial(MaterialType)
 	Intersects(RayType) IntersectionList
 	NormalAt(Tuple) Tuple
 }
 
-func Sphere(id int) SphereType {
-	return SphereType{Id: id, Transform: IdentityMatrix(), Material: Material()}
+func Sphere(id int) *SphereType {
+	return &SphereType{Id: id, Transform: IdentityMatrix(), Material: Material()}
 }
 
-func (s SphereType) GetId() int {
+func (s *SphereType) GetId() int {
 	return s.Id
 }
 
-func (s SphereType) GetMaterial() MaterialType {
+func (s *SphereType) GetMaterial() MaterialType {
 	return s.Material
 }
 
-func (s SphereType) Intersects(r RayType) IntersectionList {
+func (s *SphereType) SetMaterial(m MaterialType) {
+	s.Material = m
+}
+
+func (s *SphereType) Intersects(r RayType) IntersectionList {
 	inverse := s.Transform.Invert()
 
 	r = r.Transform(inverse)
@@ -48,12 +53,11 @@ func (s SphereType) Intersects(r RayType) IntersectionList {
 	return IntersectionList{Intersection(t1, s), Intersection(t2, s)}
 }
 
-func (s SphereType) SetTransform(m Matrix) SphereType {
+func (s *SphereType) SetTransform(m Matrix) {
 	s.Transform = m
-	return s
 }
 
-func (s SphereType) NormalAt(p Tuple) Tuple {
+func (s *SphereType) NormalAt(p Tuple) Tuple {
 	objectPoint := s.Transform.Invert().MultiplyTuple(p)
 	objectNormal := objectPoint.Sub(Point(0, 0, 0))
 	worldNormal := s.Transform.Invert().Transpose().MultiplyTuple(objectNormal)
