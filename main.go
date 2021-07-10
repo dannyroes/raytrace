@@ -18,7 +18,72 @@ type Projectile struct {
 }
 
 func main() {
-	drawCircleSingleOrigin()
+	drawScene()
+	fmt.Println("Done!")
+}
+
+func drawScene() {
+	floor := Sphere(1)
+	floor.Transform = Scaling(10, 0.01, 10)
+	m := Material()
+	m.Colour = Colour(1, 0.9, 0.9)
+	m.Specular = 0
+	floor.SetMaterial(m)
+
+	leftWall := Sphere(2)
+	leftWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
+	leftWall.SetMaterial(m)
+
+	rightWall := Sphere(3)
+	rightWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
+	rightWall.SetMaterial(m)
+
+	middle := Sphere(4)
+	middle.Transform = Translation(-0.5, 1, 0.5)
+
+	m = Material()
+	m.Colour = Colour(0.1, 1, 0.5)
+	m.Diffuse = 0.7
+	m.Specular = 0.3
+
+	middle.SetMaterial(m)
+
+	right := Sphere(5)
+	right.Transform = IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
+
+	m = Material()
+	m.Colour = Colour(0.5, 1, 0.1)
+	m.Diffuse = 0.7
+	m.Specular = 0.3
+
+	right.SetMaterial(m)
+
+	left := Sphere(6)
+	left.Transform = IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
+
+	m = Material()
+	m.Colour = Colour(1, 0.8, 0.1)
+	m.Diffuse = 0.7
+	m.Specular = 0.3
+
+	left.SetMaterial(m)
+
+	w := World()
+	w.Light = PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
+
+	c := Camera(1000, 500, math.Pi/3)
+	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
+
+	w.Objects = []Object{
+		floor,
+		leftWall,
+		rightWall,
+		middle,
+		left,
+		right,
+	}
+	image := c.Render(w)
+	ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
 }
 
 func drawCircle() {
