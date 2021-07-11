@@ -84,6 +84,10 @@ func drawScene() {
 	}
 	image := c.Render(w)
 	ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
+	err := image.ToPNG("output/scene.png")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func drawCircle() {

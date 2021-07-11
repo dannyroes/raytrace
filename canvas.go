@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/png"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -50,6 +53,30 @@ func (c CanvasType) ToPPM() string {
 	}
 
 	return fmt.Sprintf("P3\n%d %d\n255\n%s", c.Width, c.Height, pixels.String())
+}
+
+func (c CanvasType) ToImage() image.Image {
+	im := image.NewRGBA(image.Rect(0, 0, c.Width, c.Height))
+
+	for x := 0; x < c.Width; x++ {
+		for y := 0; y < c.Height; y++ {
+			im.Set(x, y, c.Pixel(x, y))
+		}
+	}
+
+	return im
+}
+
+func (c CanvasType) ToPNG(filename string) error {
+	im := c.ToImage()
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	png.Encode(f, im)
+	return nil
 }
 
 func getCappedColour(ratio float64, cap int) int {

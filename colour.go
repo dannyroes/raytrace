@@ -43,3 +43,17 @@ func ColourEqual(a, b ColourTuple) bool {
 func Colour(r, g, b float64) ColourTuple {
 	return ColourTuple{Tuple{X: r, Y: g, Z: b}}
 }
+
+func (c ColourTuple) RGBA() (r, g, b, a uint32) {
+	r = getPreciseColour(getCappedColour(c.Red(), 255))
+	g = getPreciseColour(getCappedColour(c.Green(), 255))
+	b = getPreciseColour(getCappedColour(c.Blue(), 255))
+	a = getPreciseColour(255)
+
+	return
+}
+
+func getPreciseColour(c int) uint32 {
+	f := float64(c) / 255.0 * 65535.0
+	return uint32(f)
+}
