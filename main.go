@@ -39,7 +39,7 @@ func drawScene() {
 	rightWall.SetMaterial(m)
 
 	middle := Sphere(4)
-	middle.Transform = Translation(-0.5, 1, 0.5)
+	middle.Transform = Translation(0, 1, -0.5)
 
 	m = Material()
 	m.Colour = Colour(0.1, 1, 0.5)
