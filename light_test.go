@@ -28,6 +28,7 @@ func TestLighting(t *testing.T) {
 		eyeV     Tuple
 		normalV  Tuple
 		light    Light
+		inShadow bool
 		expected ColourTuple
 	}{
 		{
@@ -54,10 +55,17 @@ func TestLighting(t *testing.T) {
 			light:    PointLight(Point(0, 0, 10), Colour(1, 1, 1)),
 			expected: Colour(0.1, 0.1, 0.1),
 		},
+		{
+			eyeV:     Vector(0, 0, -1),
+			normalV:  Vector(0, 0, -1),
+			light:    PointLight(Point(0, 0, -10), Colour(1, 1, 1)),
+			inShadow: true,
+			expected: Colour(0.1, 0.1, 0.1),
+		},
 	}
 
 	for _, tc := range cases {
-		result := Lighting(m, tc.light, pos, tc.eyeV, tc.normalV)
+		result := Lighting(m, tc.light, pos, tc.eyeV, tc.normalV, tc.inShadow)
 
 		if !ColourEqual(tc.expected, result) {
 			t.Errorf("colour mismatch expected: %v received %v", tc.expected, result)

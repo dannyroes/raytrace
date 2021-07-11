@@ -133,7 +133,7 @@ func drawCircleSingleOrigin() {
 				p := ray.Position(h.T)
 				normal := h.Object.NormalAt(p)
 				eye := ray.Direction.Neg()
-				colour := Lighting(h.Object.GetMaterial(), light, p, eye, normal)
+				colour := Lighting(h.Object.GetMaterial(), light, p, eye, normal, false)
 				canvas.WritePixel(x+250, y+250, colour)
 			}
 		}

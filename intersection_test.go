@@ -162,3 +162,32 @@ func TestPrepareComputations(t *testing.T) {
 		}
 	}
 }
+
+func TestOffsetHit(t *testing.T) {
+	s := Sphere(1)
+	s.Transform = Translation(0, 0, 1)
+	cases := []struct {
+		r      RayType
+		s      *SphereType
+		i      IntersectionType
+		offset float64
+	}{
+		{
+			r:      Ray(Point(0, 0, -5), Vector(0, 0, 1)),
+			s:      s,
+			i:      Intersection(5, s),
+			offset: -1 * (Epsilon / 2.0),
+		},
+	}
+
+	for _, tc := range cases {
+		c := tc.i.PrepareComputations(tc.r)
+		if c.OverPoint.Z >= tc.offset {
+			t.Errorf("Offset not applied expected <: %v received: %v", tc.offset, c.OverPoint.Z)
+		}
+
+		if c.Point.Z <= c.OverPoint.Z {
+			t.Errorf("Offset not applied Point <: %v OverPoint: %v", c.Point.Z, c.OverPoint.Z)
+		}
+	}
+}

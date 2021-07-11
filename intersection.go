@@ -32,12 +32,13 @@ func (l IntersectionList) Sort() IntersectionList {
 }
 
 type Computations struct {
-	T       float64
-	Object  Object
-	Point   Tuple
-	EyeV    Tuple
-	NormalV Tuple
-	Inside  bool
+	T         float64
+	Object    Object
+	Point     Tuple
+	EyeV      Tuple
+	NormalV   Tuple
+	Inside    bool
+	OverPoint Tuple
 }
 
 func (i IntersectionType) PrepareComputations(r RayType) Computations {
@@ -52,6 +53,8 @@ func (i IntersectionType) PrepareComputations(r RayType) Computations {
 		comp.Inside = true
 		comp.NormalV = comp.NormalV.Neg()
 	}
+
+	comp.OverPoint = comp.Point.Add(comp.NormalV.Mul(Epsilon))
 
 	return comp
 }

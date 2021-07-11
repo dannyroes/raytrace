@@ -45,7 +45,23 @@ func (w WorldType) ShadeHit(c Computations) ColourTuple {
 		c.Point,
 		c.EyeV,
 		c.NormalV,
+		w.IsShadowed(c.OverPoint),
 	)
+}
+
+func (w WorldType) IsShadowed(p Tuple) bool {
+	v := w.Light.Position.Sub(p)
+	distance := v.Magnitude()
+	direction := v.Normalize()
+	r := Ray(p, direction)
+	intersections := w.Intersect(r)
+
+	h := intersections.Hit()
+	if h.Object != nil && h.T < distance {
+		return true
+	}
+
+	return false
 }
 
 func (w WorldType) ColourAt(r RayType) ColourTuple {

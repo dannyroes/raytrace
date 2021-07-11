@@ -2,7 +2,7 @@ package main
 
 import "math"
 
-var Epsilon = 0.00001
+const Epsilon = 0.00001
 
 type Tuple struct {
 	X float64

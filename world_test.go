@@ -65,6 +65,8 @@ func TestIntersectWorld(t *testing.T) {
 
 func TestShadeHit(t *testing.T) {
 	w := DefaultWorld()
+	s2 := Sphere(2)
+	s2.Transform = Translation(0, 0, 10)
 	tests := []struct {
 		w        WorldType
 		l        Light
@@ -85,6 +87,20 @@ func TestShadeHit(t *testing.T) {
 			r:        Ray(Point(0, 0, 0), Vector(0, 0, 1)),
 			i:        Intersection(0.5, w.Objects[1]),
 			expected: Colour(0.90498, 0.90498, 0.90498),
+		},
+		{
+			w: func() WorldType {
+				w := World()
+
+				s1 := Sphere(1)
+				w.Objects = []Object{s1, s2}
+
+				return w
+			}(),
+			l:        PointLight(Point(0, 0, -10), Colour(1, 1, 1)),
+			r:        Ray(Point(0, 0, 5), Vector(0, 0, 1)),
+			i:        Intersection(4, s2),
+			expected: Colour(0.1, 0.1, 0.1),
 		},
 	}
 
@@ -136,6 +152,43 @@ func TestColourAt(t *testing.T) {
 
 		if !ColourEqual(result, tc.expected) {
 			t.Errorf("Colour mismatch expected: %+v received %+v", tc.expected, result)
+		}
+	}
+}
+
+func TestIsShadowed(t *testing.T) {
+	tests := []struct {
+		w        WorldType
+		p        Tuple
+		expected bool
+	}{
+		{
+			w:        DefaultWorld(),
+			p:        Point(0, 10, 0),
+			expected: false,
+		},
+		{
+			w:        DefaultWorld(),
+			p:        Point(10, -10, 10),
+			expected: true,
+		},
+		{
+			w:        DefaultWorld(),
+			p:        Point(-20, 20, -20),
+			expected: false,
+		},
+		{
+			w:        DefaultWorld(),
+			p:        Point(-2, 2, -2),
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		result := tc.w.IsShadowed(tc.p)
+
+		if tc.expected != result {
+			t.Errorf("Shadow mismatch expected: %+v received %+v", tc.expected, result)
 		}
 	}
 }
