@@ -1,6 +1,10 @@
 package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+	"time"
+)
 
 type CameraType struct {
 	HSize       int
@@ -51,12 +55,20 @@ func (c *CameraType) RayForPixel(x, y int) RayType {
 func (c *CameraType) Render(w WorldType) CanvasType {
 	image := Canvas(c.HSize, c.VSize)
 
+	fmt.Println("Beginning render")
+
+	p := 0
+	t := time.Now()
 	for y := 0; y < c.VSize; y++ {
 		for x := 0; x < c.HSize; x++ {
 			ray := c.RayForPixel(x, y)
 			colour := w.ColourAt(ray)
 			image.WritePixel(x, y, colour)
+			p++
 		}
 	}
+
+	duration := time.Since(t)
+	fmt.Printf("Rendered %d pixels in %v\n", p, duration)
 	return image
 }
