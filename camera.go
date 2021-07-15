@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"runtime"
+	"sync"
 	"time"
 )
 
@@ -55,20 +57,64 @@ func (c *CameraType) RayForPixel(x, y int) RayType {
 func (c *CameraType) Render(w WorldType) CanvasType {
 	image := Canvas(c.HSize, c.VSize)
 
+	in := make(chan PixelJob)
+	out := make(chan PixelColour)
+
+	wg := &sync.WaitGroup{}
+
+	for x := 0; x < runtime.NumCPU()-1; x++ {
+		wg.Add(1)
+		go renderPixel(in, out, wg)
+	}
+
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
 	fmt.Println("Beginning render")
 
 	p := 0
 	t := time.Now()
-	for y := 0; y < c.VSize; y++ {
-		for x := 0; x < c.HSize; x++ {
-			ray := c.RayForPixel(x, y)
-			colour := w.ColourAt(ray)
-			image.WritePixel(x, y, colour)
-			p++
+
+	go func() {
+		for y := 0; y < c.VSize; y++ {
+			for x := 0; x < c.HSize; x++ {
+				in <- PixelJob{x, y, c, w}
+			}
 		}
+		close(in)
+	}()
+
+	for pixel := range out {
+		image.WritePixel(pixel.x, pixel.y, pixel.c)
+		p++
 	}
 
 	duration := time.Since(t)
 	fmt.Printf("Rendered %d pixels in %v\n", p, duration)
 	return image
+}
+
+type PixelJob struct {
+	x int
+	y int
+	c *CameraType
+	w WorldType
+}
+
+type PixelColour struct {
+	x int
+	y int
+	c ColourTuple
+}
+
+func renderPixel(c <-chan PixelJob, out chan<- PixelColour, wg *sync.WaitGroup) {
+	for p := range c {
+		ray := p.c.RayForPixel(p.x, p.y)
+		colour := p.w.ColourAt(ray)
+		out <- PixelColour{p.x, p.y, colour}
+	}
+
+	wg.Done()
 }

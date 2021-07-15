@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -18,11 +20,29 @@ type Projectile struct {
 }
 
 func main() {
-	drawScene()
+	width := 1000
+	height := 500
+
+	fmt.Println(os.Args)
+
+	if len(os.Args) == 3 {
+		w, err := strconv.Atoi(os.Args[1])
+		if err == nil {
+			h, err := strconv.Atoi(os.Args[2])
+			if err == nil {
+				width = w
+				height = h
+			}
+		}
+	}
+
+	fmt.Printf("Width %d; Height %d\n", width, height)
+
+	drawScene(width, height)
 	fmt.Println("Done!")
 }
 
-func drawScene() {
+func drawScene(width, height int) {
 	floor := Sphere(1)
 	floor.Transform = Scaling(10, 0.01, 10)
 	m := Material()
@@ -71,7 +91,7 @@ func drawScene() {
 	w := World()
 	w.Light = PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
 
-	c := Camera(1000, 500, math.Pi/3)
+	c := Camera(width, height, math.Pi/3)
 	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
 
 	w.Objects = []Object{
@@ -83,7 +103,7 @@ func drawScene() {
 		right,
 	}
 	image := c.Render(w)
-	ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
+	// ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
 	err := image.ToPNG("output/scene.png")
 	if err != nil {
 		fmt.Println(err)
