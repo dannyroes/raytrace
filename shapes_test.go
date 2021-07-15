@@ -11,7 +11,7 @@ func TestSphereTransform(t *testing.T) {
 		expected Matrix
 	}{
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			expected: IdentityMatrix(),
 		},
 		{
@@ -37,8 +37,8 @@ func TestSphereIntersection(t *testing.T) {
 			s: sphereWithTransform(Scaling(2, 2, 2)),
 			r: Ray(Point(0, 0, -5), Vector(0, 0, 1)),
 			expected: Intersections(
-				Intersection(3, Sphere(1)),
-				Intersection(7, Sphere(1)),
+				Intersection(3, Sphere()),
+				Intersection(7, Sphere()),
 			),
 		},
 		{
@@ -72,22 +72,22 @@ func TestSphereNormal(t *testing.T) {
 		expected Tuple
 	}{
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			p:        Point(1, 0, 0),
 			expected: Vector(1, 0, 0),
 		},
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			p:        Point(0, 1, 0),
 			expected: Vector(0, 1, 0),
 		},
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			p:        Point(0, 0, 1),
 			expected: Vector(0, 0, 1),
 		},
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			p:        Point(angle, angle, angle),
 			expected: Vector(angle, angle, angle),
 		},
@@ -117,7 +117,7 @@ func TestSphereNormal(t *testing.T) {
 }
 
 func TestSphereMaterial(t *testing.T) {
-	s := Sphere(1)
+	s := Sphere()
 	m := Material()
 
 	if s.Material != m {
@@ -139,7 +139,7 @@ func TestSphereMaterial(t *testing.T) {
 // }
 
 func sphereWithTransform(t Matrix) *SphereType {
-	s := Sphere(1)
+	s := Sphere()
 	s.SetTransform(t)
 	return s
 }

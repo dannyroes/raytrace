@@ -10,7 +10,7 @@ func TestIntersectionType(t *testing.T) {
 		t float64
 	}{
 		{
-			s: Sphere(1),
+			s: Sphere(),
 			t: 3.5,
 		},
 	}
@@ -29,7 +29,7 @@ func TestIntersectionType(t *testing.T) {
 }
 
 func TestIntersectionList(t *testing.T) {
-	s := Sphere(1)
+	s := Sphere()
 	i1 := Intersection(1, s)
 	i2 := Intersection(2, s)
 
@@ -49,7 +49,7 @@ func TestIntersectionList(t *testing.T) {
 }
 
 func TestHit(t *testing.T) {
-	s := Sphere(1)
+	s := Sphere()
 	cases := []struct {
 		l        IntersectionList
 		expected IntersectionType
@@ -101,7 +101,7 @@ func TestHit(t *testing.T) {
 }
 
 func TestPrepareComputations(t *testing.T) {
-	defaultSphere := Sphere(1)
+	defaultSphere := Sphere()
 	tests := []struct {
 		r        RayType
 		o        Shape
@@ -164,7 +164,7 @@ func TestPrepareComputations(t *testing.T) {
 }
 
 func TestOffsetHit(t *testing.T) {
-	s := Sphere(1)
+	s := Sphere()
 	s.Transform = Translation(0, 0, 1)
 	cases := []struct {
 		r      RayType

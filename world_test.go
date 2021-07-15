@@ -22,11 +22,11 @@ func TestWorld(t *testing.T) {
 	mat.Colour = Colour(0.8, 1.0, 0.6)
 	mat.Diffuse = 0.7
 	mat.Specular = 0.2
-	s1 := Sphere(1)
+	s1 := Sphere()
 	s1.Material = mat
 
 	scale := IdentityMatrix().Scale(0.5, 0.5, 0.5)
-	s2 := Sphere(2)
+	s2 := Sphere()
 	s2.Transform = scale
 
 	w = DefaultWorld()
@@ -65,7 +65,7 @@ func TestIntersectWorld(t *testing.T) {
 
 func TestShadeHit(t *testing.T) {
 	w := DefaultWorld()
-	s2 := Sphere(2)
+	s2 := Sphere()
 	s2.Transform = Translation(0, 0, 10)
 	tests := []struct {
 		w        WorldType
@@ -92,7 +92,7 @@ func TestShadeHit(t *testing.T) {
 			w: func() WorldType {
 				w := World()
 
-				s1 := Sphere(1)
+				s1 := Sphere()
 				w.Objects = []Shape{s1, s2}
 
 				return w

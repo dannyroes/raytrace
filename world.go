@@ -16,11 +16,11 @@ func DefaultWorld() WorldType {
 	mat.Colour = Colour(0.8, 1.0, 0.6)
 	mat.Diffuse = 0.7
 	mat.Specular = 0.2
-	s1 := Sphere(1)
+	s1 := Sphere()
 	s1.Material = mat
 
 	scale := IdentityMatrix().Scale(0.5, 0.5, 0.5)
-	s2 := Sphere(2)
+	s2 := Sphere()
 	s2.Transform = scale
 
 	return WorldType{

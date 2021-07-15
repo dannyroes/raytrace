@@ -19,7 +19,7 @@ type Shape interface {
 	LocalNormal(Tuple) Tuple
 }
 
-func Sphere(id int) *SphereType {
+func Sphere() *SphereType {
 	return &SphereType{ShapeType{Transform: IdentityMatrix(), Material: Material()}}
 }
 

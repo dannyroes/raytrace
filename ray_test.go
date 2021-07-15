@@ -31,27 +31,27 @@ func TestSphereIntersect(t *testing.T) {
 		expected []float64
 	}{
 		{
-			s:        Sphere(1),
+			s:        Sphere(),
 			r:        Ray(Point(0, 0, -5), Vector(0, 0, 1)),
 			expected: []float64{4, 6},
 		},
 		{
-			s:        Sphere(2),
+			s:        Sphere(),
 			r:        Ray(Point(0, 1, -5), Vector(0, 0, 1)),
 			expected: []float64{5, 5},
 		},
 		{
-			s:        Sphere(3),
+			s:        Sphere(),
 			r:        Ray(Point(0, 2, -5), Vector(0, 0, 1)),
 			expected: []float64{},
 		},
 		{
-			s:        Sphere(4),
+			s:        Sphere(),
 			r:        Ray(Point(0, 0, 0), Vector(0, 0, 1)),
 			expected: []float64{-1, 1},
 		},
 		{
-			s:        Sphere(5),
+			s:        Sphere(),
 			r:        Ray(Point(0, 0, 5), Vector(0, 0, 1)),
 			expected: []float64{-6, -4},
 		},

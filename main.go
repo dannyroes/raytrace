@@ -43,22 +43,22 @@ func main() {
 }
 
 func drawScene(width, height int) {
-	floor := Sphere(1)
+	floor := Sphere()
 	floor.Transform = Scaling(10, 0.01, 10)
 	m := Material()
 	m.Colour = Colour(1, 0.9, 0.9)
 	m.Specular = 0
 	floor.SetMaterial(m)
 
-	leftWall := Sphere(2)
+	leftWall := Sphere()
 	leftWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
 	leftWall.SetMaterial(m)
 
-	rightWall := Sphere(3)
+	rightWall := Sphere()
 	rightWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
 	rightWall.SetMaterial(m)
 
-	middle := Sphere(4)
+	middle := Sphere()
 	middle.Transform = Translation(0, 1, -0.5)
 
 	m = Material()
@@ -68,7 +68,7 @@ func drawScene(width, height int) {
 
 	middle.SetMaterial(m)
 
-	right := Sphere(5)
+	right := Sphere()
 	right.Transform = IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
 
 	m = Material()
@@ -78,7 +78,7 @@ func drawScene(width, height int) {
 
 	right.SetMaterial(m)
 
-	left := Sphere(6)
+	left := Sphere()
 	left.Transform = IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
 
 	m = Material()
@@ -113,7 +113,7 @@ func drawScene(width, height int) {
 func drawCircle() {
 	canvas := Canvas(500, 500)
 	colour := Colour(1, 0.5, 0.3)
-	sphere := Sphere(1)
+	sphere := Sphere()
 	sphere.SetTransform(Scaling(200, 100, 200).RotateZ(2.5).Translate(250, 250, 250))
 
 	for x := 0; x < canvas.Width; x++ {
@@ -134,7 +134,7 @@ func drawCircleSingleOrigin() {
 	canvas := Canvas(500, 500)
 	wallZ := 200.0
 	rayOrigin := Point(0, 0, -20)
-	sphere := Sphere(1)
+	sphere := Sphere()
 	sphere.SetTransform(IdentityMatrix().Scale(10, 10, 10))
 	sphere.Material.Colour = Colour(1, 0.2, 1)
 	sphere.Material.Shininess = 50
