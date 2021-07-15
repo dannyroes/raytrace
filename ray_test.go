@@ -58,7 +58,7 @@ func TestSphereIntersect(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result := tc.s.Intersects(tc.r)
+		result := Intersects(tc.s, tc.r)
 
 		if len(result) != len(tc.expected) {
 			t.Errorf("Result length mismatch expected %d, received %d", len(tc.expected), len(result))
@@ -69,8 +69,8 @@ func TestSphereIntersect(t *testing.T) {
 				t.Errorf("Result index %d mismatch expected %d, received %d", i, len(tc.expected), len(result))
 			}
 
-			if result[i].Object.GetId() != tc.s.Id {
-				t.Errorf("Result index %d id mismatch expected %d, received %d", i, tc.s.Id, result[i].Object.GetId())
+			if result[i].Object != tc.s {
+				t.Errorf("Result index %d id mismatch expected %p, received %p", i, tc.s, result[i].Object)
 			}
 		}
 	}

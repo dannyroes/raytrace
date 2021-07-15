@@ -1,7 +1,7 @@
 package main
 
 type WorldType struct {
-	Objects []Object
+	Objects []Shape
 	Light   Light
 }
 
@@ -24,7 +24,7 @@ func DefaultWorld() WorldType {
 	s2.Transform = scale
 
 	return WorldType{
-		Objects: []Object{s1, s2},
+		Objects: []Shape{s1, s2},
 		Light:   l,
 	}
 }
@@ -32,7 +32,7 @@ func DefaultWorld() WorldType {
 func (w WorldType) Intersect(r RayType) IntersectionList {
 	list := IntersectionList{}
 	for _, obj := range w.Objects {
-		l := obj.Intersects(r)
+		l := Intersects(obj, r)
 		list = append(list, l...)
 	}
 	return list.Sort()

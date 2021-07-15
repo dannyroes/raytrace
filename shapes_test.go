@@ -49,7 +49,7 @@ func TestSphereIntersection(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result := tc.s.Intersects(tc.r)
+		result := Intersects(tc.s, tc.r)
 
 		if len(tc.expected) != len(result) {
 			t.Errorf("intersection length mismatch expected %d received %d", len(tc.expected), len(result))
@@ -104,7 +104,7 @@ func TestSphereNormal(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result := tc.s.NormalAt(tc.p)
+		result := NormalAt(tc.s, tc.p)
 
 		if !TupleEqual(result, result.Normalize()) {
 			t.Errorf("normal is not normalized expected %v received %v", result.Normalize(), result)
@@ -131,6 +131,12 @@ func TestSphereMaterial(t *testing.T) {
 		t.Errorf("Material mismatch expected: %+v received: %+v", m, s.Material)
 	}
 }
+
+// func TestPlaneNormal(t *testing.T) {
+// 	p := Plane()
+
+// 	n1 := p.
+// }
 
 func sphereWithTransform(t Matrix) *SphereType {
 	s := Sphere(1)

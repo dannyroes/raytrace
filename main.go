@@ -94,7 +94,7 @@ func drawScene(width, height int) {
 	c := Camera(width, height, math.Pi/3)
 	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
 
-	w.Objects = []Object{
+	w.Objects = []Shape{
 		floor,
 		leftWall,
 		rightWall,
@@ -119,9 +119,9 @@ func drawCircle() {
 	for x := 0; x < canvas.Width; x++ {
 		for y := 0; y < canvas.Height; y++ {
 			ray := Ray(Point(float64(x), float64(y), -500), Vector(0, 0, 1))
-			h := sphere.Intersects(ray).Hit()
+			h := Intersects(sphere, ray).Hit()
 
-			if h.Object.GetId() == 1 {
+			if h.Object == sphere {
 				canvas.WritePixel(x, y, colour)
 			}
 		}
@@ -147,11 +147,11 @@ func drawCircleSingleOrigin() {
 		for y := -250; y < 250; y++ {
 			v := Point(float64(x), float64(y), wallZ).Sub(rayOrigin).Normalize()
 			ray := Ray(rayOrigin, v)
-			h := sphere.Intersects(ray).Hit()
+			h := Intersects(sphere, ray).Hit()
 
-			if h.Object.GetId() > 0 {
+			if h.T >= 0 {
 				p := ray.Position(h.T)
-				normal := h.Object.NormalAt(p)
+				normal := NormalAt(h.Object, p)
 				eye := ray.Direction.Neg()
 				colour := Lighting(h.Object.GetMaterial(), light, p, eye, normal, false)
 				canvas.WritePixel(x+250, y+250, colour)

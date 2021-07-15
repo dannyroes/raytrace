@@ -22,8 +22,8 @@ func TestIntersectionType(t *testing.T) {
 			t.Errorf("T not equal expected %f received %F", tc.t, i.T)
 		}
 
-		if tc.s.Id != i.Object.GetId() {
-			t.Errorf("Object ID not equal expected %d received %d", tc.s.Id, i.Object.GetId())
+		if tc.s != i.Object {
+			t.Errorf("Object ID not equal expected %p received %p", tc.s, i.Object)
 		}
 	}
 }
@@ -94,7 +94,7 @@ func TestHit(t *testing.T) {
 			}
 			continue
 		}
-		if tc.expected.Object.GetId() != hit.Object.GetId() || tc.expected.T != hit.T {
+		if tc.expected.Object != hit.Object || tc.expected.T != hit.T {
 			t.Errorf("Hit does not match expected %+v received %+v", tc.expected, hit)
 		}
 	}
@@ -104,7 +104,7 @@ func TestPrepareComputations(t *testing.T) {
 	defaultSphere := Sphere(1)
 	tests := []struct {
 		r        RayType
-		o        Object
+		o        Shape
 		i        IntersectionType
 		expected Computations
 	}{
@@ -141,7 +141,7 @@ func TestPrepareComputations(t *testing.T) {
 			t.Errorf("T value doesn't match expected: %f received: %f", tc.expected.T, comp.T)
 		}
 
-		if comp.Object.GetId() != tc.expected.Object.GetId() {
+		if comp.Object != tc.expected.Object {
 			t.Errorf("Object doesn't match expected: %+v received: %+v", tc.expected.Object, comp.Object)
 		}
 

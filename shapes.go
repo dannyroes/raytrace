@@ -3,25 +3,24 @@ package main
 import "math"
 
 type SphereType struct {
-	Id        int
+	ShapeType
+}
+
+type ShapeType struct {
 	Transform Matrix
 	Material  MaterialType
 }
 
-type Object interface {
-	GetId() int
+type Shape interface {
 	GetMaterial() MaterialType
 	SetMaterial(MaterialType)
-	Intersects(RayType) IntersectionList
-	NormalAt(Tuple) Tuple
+	GetTransform() Matrix
+	LocalIntersect(RayType) IntersectionList
+	LocalNormal(Tuple) Tuple
 }
 
 func Sphere(id int) *SphereType {
-	return &SphereType{Id: id, Transform: IdentityMatrix(), Material: Material()}
-}
-
-func (s *SphereType) GetId() int {
-	return s.Id
+	return &SphereType{ShapeType{Transform: IdentityMatrix(), Material: Material()}}
 }
 
 func (s *SphereType) GetMaterial() MaterialType {
@@ -32,10 +31,7 @@ func (s *SphereType) SetMaterial(m MaterialType) {
 	s.Material = m
 }
 
-func (s *SphereType) Intersects(r RayType) IntersectionList {
-	inverse := s.Transform.Invert()
-
-	r = r.Transform(inverse)
+func (s *SphereType) LocalIntersect(r RayType) IntersectionList {
 	sphereRayVector := r.Origin.Sub(Point(0, 0, 0))
 
 	dotA := Dot(r.Direction, r.Direction)
@@ -53,14 +49,42 @@ func (s *SphereType) Intersects(r RayType) IntersectionList {
 	return IntersectionList{Intersection(t1, s), Intersection(t2, s)}
 }
 
+func transformRay(o Shape, r RayType) RayType {
+	inverse := o.GetTransform().Invert()
+	return r.Transform(inverse)
+}
+
 func (s *SphereType) SetTransform(m Matrix) {
 	s.Transform = m
 }
 
-func (s *SphereType) NormalAt(p Tuple) Tuple {
-	objectPoint := s.Transform.Invert().MultiplyTuple(p)
-	objectNormal := objectPoint.Sub(Point(0, 0, 0))
-	worldNormal := s.Transform.Invert().Transpose().MultiplyTuple(objectNormal)
+func (s *SphereType) GetTransform() Matrix {
+	return s.Transform
+}
+
+func Intersects(s Shape, r RayType) IntersectionList {
+	r = transformRay(s, r)
+	return s.LocalIntersect(r)
+}
+
+func NormalAt(s Shape, p Tuple) Tuple {
+	objectPoint := toObjectSpace(s, p)
+
+	objectNormal := s.LocalNormal(objectPoint)
+
+	return toWorldNormal(s, objectNormal)
+}
+
+func (s *SphereType) LocalNormal(objectPoint Tuple) Tuple {
+	return objectPoint.Sub(Point(0, 0, 0))
+}
+
+func toObjectSpace(o Shape, point Tuple) Tuple {
+	return o.GetTransform().Invert().MultiplyTuple(point)
+}
+
+func toWorldNormal(o Shape, vector Tuple) Tuple {
+	worldNormal := o.GetTransform().Invert().Transpose().MultiplyTuple(vector)
 	worldNormal.W = 0
 
 	return worldNormal.Normalize()

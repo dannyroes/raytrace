@@ -4,12 +4,12 @@ import "sort"
 
 type IntersectionType struct {
 	T      float64
-	Object Object
+	Object Shape
 }
 
 type IntersectionList []IntersectionType
 
-func Intersection(t float64, o Object) IntersectionType {
+func Intersection(t float64, o Shape) IntersectionType {
 	return IntersectionType{T: t, Object: o}
 }
 
@@ -33,7 +33,7 @@ func (l IntersectionList) Sort() IntersectionList {
 
 type Computations struct {
 	T         float64
-	Object    Object
+	Object    Shape
 	Point     Tuple
 	EyeV      Tuple
 	NormalV   Tuple
@@ -47,7 +47,7 @@ func (i IntersectionType) PrepareComputations(r RayType) Computations {
 	comp.Object = i.Object
 	comp.Point = r.Position(comp.T)
 	comp.EyeV = r.Direction.Neg()
-	comp.NormalV = comp.Object.NormalAt(comp.Point)
+	comp.NormalV = NormalAt(comp.Object, comp.Point)
 
 	if Dot(comp.NormalV, comp.EyeV) < 0 {
 		comp.Inside = true

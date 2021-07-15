@@ -17,3 +17,11 @@ func Material() MaterialType {
 		Shininess: 200.0,
 	}
 }
+
+func (m MaterialType) Equals(m2 MaterialType) bool {
+	return FloatEqual(m.Ambient, m2.Ambient) &&
+		FloatEqual(m.Diffuse, m2.Diffuse) &&
+		FloatEqual(m.Specular, m2.Specular) &&
+		FloatEqual(m.Shininess, m2.Shininess) &&
+		TupleEqual(m.Colour.Tuple, m2.Colour.Tuple)
+}

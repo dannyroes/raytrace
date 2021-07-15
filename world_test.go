@@ -93,7 +93,7 @@ func TestShadeHit(t *testing.T) {
 				w := World()
 
 				s1 := Sphere(1)
-				w.Objects = []Object{s1, s2}
+				w.Objects = []Shape{s1, s2}
 
 				return w
 			}(),
@@ -193,9 +193,9 @@ func TestIsShadowed(t *testing.T) {
 	}
 }
 
-func containsObject(w WorldType, obj Object) bool {
+func containsObject(w WorldType, obj Shape) bool {
 	for _, o := range w.Objects {
-		if o.GetId() == obj.GetId() {
+		if obj.GetTransform().Equals(o.GetTransform()) && obj.GetMaterial().Equals(o.GetMaterial()) {
 			return true
 		}
 	}
