@@ -28,6 +28,10 @@ func (c ColourTuple) Mul(b float64) ColourTuple {
 	return ColourTuple{c.Tuple.Mul(b)}
 }
 
+func (c ColourTuple) Div(b float64) ColourTuple {
+	return ColourTuple{c.Tuple.Div(b)}
+}
+
 func MultiplyColours(a, b ColourTuple) ColourTuple {
 	return Colour(
 		a.Red()*b.Red(),

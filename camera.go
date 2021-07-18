@@ -11,6 +11,7 @@ import (
 type CameraType struct {
 	HSize       int
 	VSize       int
+	Supersample int
 	FieldOfView float64
 	Transform   Matrix
 	PixelSize   float64
@@ -55,7 +56,15 @@ func (c *CameraType) RayForPixel(x, y int) RayType {
 }
 
 func (c *CameraType) Render(w WorldType) CanvasType {
-	image := Canvas(c.HSize, c.VSize)
+	var image CanvasType
+
+	if c.Supersample > 1 {
+		c.HSize = c.HSize * c.Supersample
+		c.VSize = c.VSize * c.Supersample
+		c.CalcPixelSize()
+	}
+	fmt.Printf("Rendering width %d; height %d\n", c.HSize, c.VSize)
+	image = Canvas(c.HSize, c.VSize)
 
 	in := make(chan PixelJob)
 	out := make(chan PixelColour)
@@ -93,7 +102,36 @@ func (c *CameraType) Render(w WorldType) CanvasType {
 
 	duration := time.Since(t)
 	fmt.Printf("Rendered %d pixels in %v\n", p, duration)
+
+	if c.Supersample > 1 {
+		c.HSize = c.HSize / c.Supersample
+		c.VSize = c.VSize / c.Supersample
+		fmt.Printf("Downsampling to %dx%d\n", c.HSize, c.VSize)
+		image = downsample(image, c.HSize, c.VSize)
+	}
 	return image
+}
+
+func downsample(image CanvasType, width, height int) CanvasType {
+	factor := image.Width / width
+
+	newImage := Canvas(width, height)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			c := Colour(0, 0, 0)
+			for iy := 0; iy < factor; iy++ {
+				for ix := 0; ix < factor; ix++ {
+					c = c.Add(image.Pixel(x*factor+ix, y*factor+iy))
+				}
+			}
+
+			c = c.Div(float64(factor * factor))
+			newImage.WritePixel(x, y, c)
+		}
+	}
+
+	return newImage
 }
 
 type PixelJob struct {

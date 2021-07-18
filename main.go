@@ -20,8 +20,8 @@ type Projectile struct {
 }
 
 func main() {
-	width := 1000
-	height := 500
+	width := 250
+	height := 125
 
 	fmt.Println(os.Args)
 
@@ -35,8 +35,6 @@ func main() {
 			}
 		}
 	}
-
-	fmt.Printf("Width %d; Height %d\n", width, height)
 
 	drawScene(width, height)
 	fmt.Println("Done!")
@@ -92,6 +90,7 @@ func drawScene(width, height int) {
 	w.Light = PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
 
 	c := Camera(width, height, math.Pi/3)
+	c.Supersample = 4
 	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
 
 	w.Objects = []Shape{
