@@ -122,12 +122,6 @@ func TestSphereMaterial(t *testing.T) {
 	}
 }
 
-// func TestPlaneNormal(t *testing.T) {
-// 	p := Plane()
-
-// 	n1 := p.
-// }
-
 func sphereWithTransform(t Matrix) *SphereType {
 	s := Sphere()
 	s.SetTransform(t)
