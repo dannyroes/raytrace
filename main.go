@@ -22,6 +22,7 @@ type Projectile struct {
 func main() {
 	width := 250
 	height := 125
+	supersample := 1
 
 	fmt.Println(os.Args)
 
@@ -36,25 +37,28 @@ func main() {
 		}
 	}
 
-	drawScene(width, height)
+	drawScene(width, height, supersample)
 	fmt.Println("Done!")
 }
 
-func drawScene(width, height int) {
-	floor := Sphere()
-	floor.Transform = Scaling(10, 0.01, 10)
+func drawScene(width, height, supersample int) {
+	floor := Plane()
 	m := Material()
 	m.Colour = Colour(1, 0.9, 0.9)
 	m.Specular = 0
 	floor.SetMaterial(m)
 
-	leftWall := Sphere()
-	leftWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
+	leftWall := Plane()
+	leftWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 26)
 	leftWall.SetMaterial(m)
 
-	rightWall := Sphere()
-	rightWall.Transform = Scaling(10, 0.01, 10).RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
+	rightWall := Plane()
+	rightWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 26)
 	rightWall.SetMaterial(m)
+
+	ceiling := Plane()
+	ceiling.Transform = Translation(0, 6, 0)
+	ceiling.SetMaterial(m)
 
 	middle := Sphere()
 	middle.Transform = Translation(0, 1, -0.5)
@@ -87,16 +91,17 @@ func drawScene(width, height int) {
 	left.SetMaterial(m)
 
 	w := World()
-	w.Light = PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
+	w.Light = PointLight(Point(-5, 5, -5), Colour(1, 1, 1))
 
 	c := Camera(width, height, math.Pi/3)
-	c.Supersample = 4
+	c.Supersample = supersample
 	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
 
 	w.Objects = []Shape{
 		floor,
 		leftWall,
 		rightWall,
+		ceiling,
 		middle,
 		left,
 		right,
