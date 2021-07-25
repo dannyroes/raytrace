@@ -25,3 +25,25 @@ func TestMaterial(t *testing.T) {
 		t.Errorf("bad shininess expected: %f received %f", 0.1, m.Shininess)
 	}
 }
+
+func TestMaterialPattern(t *testing.T) {
+	m := Material()
+	m.Ambient = 1
+	m.Diffuse = 0
+	m.Specular = 0
+	m.Pattern = StripePattern(White, Black)
+
+	eyeV := Vector(0, 0, -1)
+	normalV := Vector(0, 0, -1)
+	light := PointLight(Point(0, 0, -1), White)
+
+	c1 := Lighting(m, Sphere(), light, Point(0.9, 0, 0), eyeV, normalV, false)
+	if !ColourEqual(c1, White) {
+		t.Errorf("C1 mismatch expected %+v received %+v", White, c1)
+	}
+
+	c2 := Lighting(m, Sphere(), light, Point(1.1, 0, 0), eyeV, normalV, false)
+	if !ColourEqual(c2, Black) {
+		t.Errorf("C2 mismatch expected %+v received %+v", Black, c2)
+	}
+}

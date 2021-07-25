@@ -41,8 +41,9 @@ func (w WorldType) Intersect(r RayType) IntersectionList {
 func (w WorldType) ShadeHit(c Computations) ColourTuple {
 	return Lighting(
 		c.Object.GetMaterial(),
+		c.Object,
 		w.Light,
-		c.Point,
+		c.OverPoint,
 		c.EyeV,
 		c.NormalV,
 		w.IsShadowed(c.OverPoint),

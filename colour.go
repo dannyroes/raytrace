@@ -2,6 +2,7 @@ package main
 
 var (
 	Black = Colour(0, 0, 0)
+	White = Colour(1, 1, 1)
 )
 
 type ColourTuple struct {
@@ -22,6 +23,10 @@ func (c ColourTuple) Blue() float64 {
 
 func (c ColourTuple) Add(b ColourTuple) ColourTuple {
 	return ColourTuple{c.Tuple.Add(b.Tuple)}
+}
+
+func (c ColourTuple) Sub(b ColourTuple) ColourTuple {
+	return ColourTuple{c.Tuple.Sub(b.Tuple)}
 }
 
 func (c ColourTuple) Mul(b float64) ColourTuple {

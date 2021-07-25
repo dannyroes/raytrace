@@ -65,11 +65,10 @@ func TestLighting(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result := Lighting(m, tc.light, pos, tc.eyeV, tc.normalV, tc.inShadow)
+		result := Lighting(m, Sphere(), tc.light, pos, tc.eyeV, tc.normalV, tc.inShadow)
 
 		if !ColourEqual(tc.expected, result) {
 			t.Errorf("colour mismatch expected: %v received %v", tc.expected, result)
 		}
 	}
-
 }

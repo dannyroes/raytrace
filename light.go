@@ -11,8 +11,13 @@ func PointLight(pos Tuple, intensity ColourTuple) Light {
 	return Light{pos, intensity}
 }
 
-func Lighting(m MaterialType, l Light, pos Tuple, eyeV Tuple, normalV Tuple, inShadow bool) ColourTuple {
-	effective := MultiplyColours(m.Colour, l.Intensity)
+func Lighting(m MaterialType, object Shape, l Light, pos Tuple, eyeV Tuple, normalV Tuple, inShadow bool) ColourTuple {
+	colour := m.Colour
+	if m.Pattern != nil {
+		colour = PatternAtObject(m.Pattern, object, pos)
+	}
+
+	effective := MultiplyColours(colour, l.Intensity)
 	lightV := l.Position.Sub(pos).Normalize()
 	ambient := effective.Mul(m.Ambient)
 	diffuse := Black
