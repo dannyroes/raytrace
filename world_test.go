@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 )
 
@@ -107,7 +108,7 @@ func TestShadeHit(t *testing.T) {
 	for _, tc := range tests {
 		tc.w.Light = tc.l
 		comp := tc.i.PrepareComputations(tc.r)
-		result := tc.w.ShadeHit(comp)
+		result := tc.w.ShadeHit(comp, 1)
 
 		if !ColourEqual(result, tc.expected) {
 			t.Errorf("Colour mismatch expected: %+v received %+v", tc.expected, result)
@@ -148,7 +149,7 @@ func TestColourAt(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		result := tc.w.ColourAt(tc.r)
+		result := tc.w.ColourAt(tc.r, 1)
 
 		if !ColourEqual(result, tc.expected) {
 			t.Errorf("Colour mismatch expected: %+v received %+v", tc.expected, result)
@@ -200,4 +201,86 @@ func containsObject(w WorldType, obj Shape) bool {
 		}
 	}
 	return false
+}
+
+func TestReflectedColour(t *testing.T) {
+	cases := []struct {
+		r         RayType
+		worldFunc func() (WorldType, IntersectionType)
+		reflect   ColourTuple
+		remain    int
+		shade     ColourTuple
+	}{
+		{
+			r: Ray(Point(0, 0, 0), Vector(0, 0, 1)),
+			worldFunc: func() (WorldType, IntersectionType) {
+				w := DefaultWorld()
+
+				mat := w.Objects[1].GetMaterial()
+				mat.Ambient = 1
+				w.Objects[1].SetMaterial(mat)
+
+				i := Intersection(1, w.Objects[1])
+				return w, i
+			},
+			reflect: Black,
+			remain:  1,
+			shade:   White,
+		},
+		{
+			r: Ray(Point(0, 0, -3), Vector(0, -1*(math.Sqrt(2)/2), math.Sqrt(2)/2)),
+			worldFunc: func() (WorldType, IntersectionType) {
+				w := DefaultWorld()
+
+				s := Plane()
+
+				mat := s.GetMaterial()
+				mat.Reflective = 0.5
+				s.SetMaterial(mat)
+				s.SetTransform(Translation(0, -1, 0))
+
+				w.Objects = append(w.Objects, s)
+
+				i := Intersection(math.Sqrt(2), s)
+				return w, i
+			},
+			reflect: Black,
+			shade:   Colour(0.87675, 0.92434, 0.82918),
+		},
+	}
+
+	for _, tc := range cases {
+		w, i := tc.worldFunc()
+		c := i.PrepareComputations(tc.r)
+
+		colour := w.ReflectedColour(c, tc.remain)
+		if !ColourEqual(tc.reflect, colour) {
+			t.Errorf("Bad reflect colour expected: %v received: %v", tc.reflect, colour)
+		}
+
+		colour = w.ShadeHit(c, 1)
+		if !ColourEqual(tc.shade, colour) {
+			t.Errorf("Bad shade colour expected: %v received: %v", tc.shade, colour)
+		}
+	}
+}
+
+func TestInfiniteRecursion(t *testing.T) {
+	w := World()
+	w.Light = PointLight(Point(0, 0, 0), Colour(1, 1, 1))
+
+	lower := Plane()
+	m := Material()
+	m.Reflective = 1
+	lower.SetMaterial(m)
+	lower.Transform = Translation(0, -1, 0)
+
+	upper := Plane()
+	upper.SetMaterial(m)
+	upper.Transform = Translation(0, 1, 0)
+
+	w.Objects = []Shape{lower, upper}
+
+	r := Ray(Point(0, 0, 0), Vector(0, 1, 0))
+	_ = w.ColourAt(r, MaxReflect)
 }

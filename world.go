@@ -38,8 +38,8 @@ func (w WorldType) Intersect(r RayType) IntersectionList {
 	return list.Sort()
 }
 
-func (w WorldType) ShadeHit(c Computations) ColourTuple {
-	return Lighting(
+func (w WorldType) ShadeHit(c Computations, remain int) ColourTuple {
+	surface := Lighting(
 		c.Object.GetMaterial(),
 		c.Object,
 		w.Light,
@@ -48,6 +48,10 @@ func (w WorldType) ShadeHit(c Computations) ColourTuple {
 		c.NormalV,
 		w.IsShadowed(c.OverPoint),
 	)
+
+	reflect := w.ReflectedColour(c, remain)
+
+	return surface.Add(reflect)
 }
 
 func (w WorldType) IsShadowed(p Tuple) bool {
@@ -65,7 +69,7 @@ func (w WorldType) IsShadowed(p Tuple) bool {
 	return false
 }
 
-func (w WorldType) ColourAt(r RayType) ColourTuple {
+func (w WorldType) ColourAt(r RayType, remain int) ColourTuple {
 	i := w.Intersect(r)
 	h := i.Hit()
 
@@ -74,5 +78,16 @@ func (w WorldType) ColourAt(r RayType) ColourTuple {
 	}
 
 	c := h.PrepareComputations(r)
-	return w.ShadeHit(c)
+	return w.ShadeHit(c, remain)
+}
+
+func (w WorldType) ReflectedColour(c Computations, remain int) ColourTuple {
+	if c.Object.GetMaterial().Reflective == 0 || remain == 0 {
+		return Black
+	}
+
+	ray := Ray(c.OverPoint, c.ReflectV)
+	colour := w.ColourAt(ray, remain-1)
+
+	return colour.Mul(c.Object.GetMaterial().Reflective)
 }

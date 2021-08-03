@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 )
 
@@ -188,6 +189,30 @@ func TestOffsetHit(t *testing.T) {
 
 		if c.Point.Z <= c.OverPoint.Z {
 			t.Errorf("Offset not applied Point <: %v OverPoint: %v", c.Point.Z, c.OverPoint.Z)
+		}
+	}
+}
+
+func TestReflectV(t *testing.T) {
+	plane := Plane()
+	cases := []struct {
+		r        RayType
+		s        Shape
+		i        IntersectionType
+		expected Tuple
+	}{
+		{
+			r:        Ray(Point(0, 1, -1), Vector(0, math.Sqrt(2)/2*-1, math.Sqrt(2)/2)),
+			s:        plane,
+			i:        Intersection(math.Sqrt(2), plane),
+			expected: Vector(0, math.Sqrt(2)/2, math.Sqrt(2)/2),
+		},
+	}
+
+	for _, tc := range cases {
+		c := tc.i.PrepareComputations(tc.r)
+		if !TupleEqual(tc.expected, c.ReflectV) {
+			t.Errorf("Bad reflect vector expected: %v received: %v", tc.expected, c.ReflectV)
 		}
 	}
 }

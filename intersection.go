@@ -39,6 +39,7 @@ type Computations struct {
 	NormalV   Tuple
 	Inside    bool
 	OverPoint Tuple
+	ReflectV  Tuple
 }
 
 func (i IntersectionType) PrepareComputations(r RayType) Computations {
@@ -54,6 +55,7 @@ func (i IntersectionType) PrepareComputations(r RayType) Computations {
 		comp.NormalV = comp.NormalV.Neg()
 	}
 
+	comp.ReflectV = r.Direction.Reflect(comp.NormalV)
 	comp.OverPoint = comp.Point.Add(comp.NormalV.Mul(Epsilon))
 
 	return comp

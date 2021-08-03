@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const MaxReflect int = 5
+
 type CameraType struct {
 	HSize       int
 	VSize       int
@@ -150,7 +152,7 @@ type PixelColour struct {
 func renderPixel(c <-chan PixelJob, out chan<- PixelColour, wg *sync.WaitGroup) {
 	for p := range c {
 		ray := p.c.RayForPixel(p.x, p.y)
-		colour := p.w.ColourAt(ray)
+		colour := p.w.ColourAt(ray, MaxReflect)
 		out <- PixelColour{p.x, p.y, colour}
 	}
 
