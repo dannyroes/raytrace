@@ -18,8 +18,8 @@ type Projectile struct {
 }
 
 func main() {
-	width := 250
-	height := 125
+	width := 500
+	height := 250
 	supersample := 1
 
 	fmt.Println(os.Args)
@@ -42,26 +42,51 @@ func main() {
 func drawScene(width, height, supersample int) {
 	floor := Plane()
 	m := Material()
-	m.Colour = Colour(1, 0.9, 0.9)
 	m.Pattern = CheckersPattern(Colour(1, 0.9, 0.9), Colour(1, 0.1, 0.1))
 	m.Specular = 0
+	m.Reflective = 0.6
 	floor.SetMaterial(m)
 
+	ceiling := Plane()
+	ceiling.Transform = Translation(0, 10, 0)
+	m = Material()
+	m.Pattern = GradientPattern(Colour(0.9, 0.9, 0.9), Colour(0.1, 1, 0.1))
+	m.Pattern.SetTransform(Scaling(20, 20, 20).Translate(-10, -10, -10))
+	m.Specular = 0
+	ceiling.SetMaterial(m)
+
+	m = Material()
+	m.Pattern = StripePattern(Colour(1, 0.9, 0.9), Colour(0.1, 0.1, 1))
+	m.Specular = 0
+	m.Pattern.SetTransform(RotateY(2))
 	leftWall := Plane()
-	leftWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 26)
+	leftWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
 	leftWall.SetMaterial(m)
 
 	rightWall := Plane()
-	rightWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 26)
+	rightWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
 	rightWall.SetMaterial(m)
 
+	rightBackWall := Plane()
+	rightBackWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, -15)
+	rightBackWall.SetMaterial(m)
+
+	leftBackWall := Plane()
+	leftBackWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, -15)
+	leftBackWall.SetMaterial(m)
+
 	middle := Sphere()
-	middle.Transform = Translation(0, 1, -0.5)
+	middle.Transform = Translation(-0.1, 1, -0.5)
 
 	m = Material()
-	m.Colour = Colour(0.1, 1, 0.5)
-	m.Diffuse = 0.7
-	m.Specular = 0.3
+	m.Colour = Colour(0.5, 0.5, 0.5)
+	m.Diffuse = 0.3
+	m.Specular = 1
+	m.Ambient = 0.05
+	m.Shininess = 300
+	m.Reflective = 0.9
+	m.Transparency = 0.9
+	m.RefractiveIndex = 1.52
 
 	middle.SetMaterial(m)
 
@@ -72,6 +97,7 @@ func drawScene(width, height, supersample int) {
 	m.Colour = Colour(0.5, 1, 0.1)
 	m.Diffuse = 0.7
 	m.Specular = 0.3
+	m.Reflective = 0.1
 
 	right.SetMaterial(m)
 
@@ -82,11 +108,12 @@ func drawScene(width, height, supersample int) {
 	m.Colour = Colour(1, 0.8, 0.1)
 	m.Diffuse = 0.7
 	m.Specular = 0.3
+	m.Reflective = 0.1
 
 	left.SetMaterial(m)
 
 	w := World()
-	w.Light = PointLight(Point(-5, 5, -5), Colour(1, 1, 1))
+	w.Light = PointLight(Point(-4, 4, -4), Colour(1, 1, 1))
 
 	c := Camera(width, height, math.Pi/3)
 	c.Supersample = supersample
@@ -94,8 +121,11 @@ func drawScene(width, height, supersample int) {
 
 	w.Objects = []Shape{
 		floor,
+		ceiling,
 		leftWall,
 		rightWall,
+		leftBackWall,
+		rightBackWall,
 		middle,
 		left,
 		right,
