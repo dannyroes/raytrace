@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"testing"
 )
@@ -165,7 +166,7 @@ func TestPrepareComputations(t *testing.T) {
 }
 
 func TestOffsetHit(t *testing.T) {
-	s := Sphere()
+	s := GlassSphere()
 	s.Transform = Translation(0, 0, 1)
 	cases := []struct {
 		r      RayType
@@ -182,13 +183,22 @@ func TestOffsetHit(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		c := tc.i.PrepareComputations(tc.r)
+		c := tc.i.PrepareComputations(tc.r, tc.i)
+		fmt.Println(c)
 		if c.OverPoint.Z >= tc.offset {
 			t.Errorf("Offset not applied expected <: %v received: %v", tc.offset, c.OverPoint.Z)
 		}
 
 		if c.Point.Z <= c.OverPoint.Z {
 			t.Errorf("Offset not applied Point <: %v OverPoint: %v", c.Point.Z, c.OverPoint.Z)
+		}
+
+		if c.UnderPoint.Z <= -1*tc.offset {
+			t.Errorf("Offset not applied expected <: %v received: %v", -1*tc.offset, c.UnderPoint.Z)
+		}
+
+		if c.Point.Z >= c.UnderPoint.Z {
+			t.Errorf("Offset not applied Point <: %v UnderPoint: %v", c.Point.Z, c.UnderPoint.Z)
 		}
 	}
 }
@@ -213,6 +223,99 @@ func TestReflectV(t *testing.T) {
 		c := tc.i.PrepareComputations(tc.r)
 		if !TupleEqual(tc.expected, c.ReflectV) {
 			t.Errorf("Bad reflect vector expected: %v received: %v", tc.expected, c.ReflectV)
+		}
+	}
+}
+
+func TestReraction(t *testing.T) {
+	a := GlassSphere()
+	a.SetTransform(Scaling(2, 2, 2))
+
+	b := GlassSphere()
+	b.SetTransform(Translation(0, 0, -0.25))
+	b.Material.RefractiveIndex = 2.0
+
+	c := GlassSphere()
+	c.SetTransform(Translation(0, 0, 0.25))
+	c.Material.RefractiveIndex = 2.5
+
+	ray := Ray(Point(0, 0, -4), Vector(0, 0, 1))
+
+	xs := Intersections(
+		Intersection(2, a),
+		Intersection(2.75, b),
+		Intersection(3.25, c),
+		Intersection(4.75, b),
+		Intersection(5.25, c),
+		Intersection(6, a),
+	)
+
+	results := []Computations{
+		{N1: 1.0, N2: 1.5},
+		{N1: 1.5, N2: 2.0},
+		{N1: 2.0, N2: 2.5},
+		{N1: 2.5, N2: 2.5},
+		{N1: 2.5, N2: 1.5},
+		{N1: 1.5, N2: 1.0},
+	}
+
+	for i, x := range xs {
+		comps := x.PrepareComputations(ray, xs...)
+
+		if !FloatEqual(results[i].N1, comps.N1) {
+			t.Errorf("index %d n1 mismatch expected %f received %f", i, results[i].N1, comps.N1)
+		}
+
+		if !FloatEqual(results[i].N2, comps.N2) {
+			t.Errorf("index %d n2 mismatch expected %f received %f", i, results[i].N2, comps.N2)
+		}
+	}
+}
+
+func TestSchlick(t *testing.T) {
+	s := GlassSphere()
+	cases := []struct {
+		s        Shape
+		r        RayType
+		xs       IntersectionList
+		i        int
+		expected float64
+	}{
+		{
+			s: s,
+			r: Ray(Point(0, 0, math.Sqrt(2)/2), Vector(0, 1, 0)),
+			xs: IntersectionList{
+				{-math.Sqrt(2) / 2, s}, {math.Sqrt(2) / 2, s},
+			},
+			i:        1,
+			expected: 1.0,
+		},
+		{
+			s: s,
+			r: Ray(Point(0, 0, 0), Vector(0, 1, 0)),
+			xs: IntersectionList{
+				{-1, s}, {1, s},
+			},
+			i:        1,
+			expected: 0.04,
+		},
+		{
+			s: s,
+			r: Ray(Point(0, 0.99, -2), Vector(0, 0, 1)),
+			xs: IntersectionList{
+				{1.8589, s},
+			},
+			i:        0,
+			expected: 0.48873,
+		},
+	}
+
+	for _, tc := range cases {
+		comps := tc.xs[tc.i].PrepareComputations(tc.r, tc.xs...)
+		reflectance := comps.Schlick()
+
+		if !FloatEqual(reflectance, tc.expected) {
+			t.Errorf("Reflectance mismatch expected: %f received %f", tc.expected, reflectance)
 		}
 	}
 }

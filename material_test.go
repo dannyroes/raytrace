@@ -24,6 +24,14 @@ func TestMaterial(t *testing.T) {
 	if !FloatEqual(m.Shininess, 200.0) {
 		t.Errorf("bad shininess expected: %f received %f", 0.1, m.Shininess)
 	}
+
+	if !FloatEqual(m.Transparency, 0.0) {
+		t.Errorf("bad transparency expected: %f received %f", 0.1, m.Transparency)
+	}
+
+	if !FloatEqual(m.RefractiveIndex, 1.0) {
+		t.Errorf("bad refractive index expected: %f received %f", 0.1, m.RefractiveIndex)
+	}
 }
 
 func TestMaterialPattern(t *testing.T) {

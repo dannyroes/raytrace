@@ -1,6 +1,9 @@
 package main
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 type IntersectionType struct {
 	T      float64
@@ -32,17 +35,24 @@ func (l IntersectionList) Sort() IntersectionList {
 }
 
 type Computations struct {
-	T         float64
-	Object    Shape
-	Point     Tuple
-	EyeV      Tuple
-	NormalV   Tuple
-	Inside    bool
-	OverPoint Tuple
-	ReflectV  Tuple
+	T          float64
+	Object     Shape
+	Point      Tuple
+	EyeV       Tuple
+	NormalV    Tuple
+	Inside     bool
+	OverPoint  Tuple
+	ReflectV   Tuple
+	N1         float64
+	N2         float64
+	UnderPoint Tuple
 }
 
-func (i IntersectionType) PrepareComputations(r RayType) Computations {
+func (i IntersectionType) PrepareComputations(r RayType, xs ...IntersectionType) Computations {
+	if len(xs) == 0 {
+		xs = IntersectionList{i}
+	}
+
 	comp := Computations{}
 	comp.T = i.T
 	comp.Object = i.Object
@@ -57,6 +67,60 @@ func (i IntersectionType) PrepareComputations(r RayType) Computations {
 
 	comp.ReflectV = r.Direction.Reflect(comp.NormalV)
 	comp.OverPoint = comp.Point.Add(comp.NormalV.Mul(Epsilon))
+	comp.UnderPoint = comp.Point.Sub(comp.NormalV.Mul(Epsilon))
+
+	var containers []Shape
+
+	for _, x := range xs {
+		if x.Object == i.Object && x.T == i.T {
+			if len(containers) == 0 {
+				comp.N1 = 1.0
+			} else {
+				comp.N1 = containers[len(containers)-1].GetMaterial().RefractiveIndex
+			}
+		}
+
+		if index := checkContainers(containers, x.Object); index >= 0 {
+			containers = append(containers[:index], containers[index+1:]...)
+		} else {
+			containers = append(containers, x.Object)
+		}
+
+		if x.Object == i.Object && x.T == i.T {
+			if len(containers) == 0 {
+				comp.N2 = 1.0
+			} else {
+				comp.N2 = containers[len(containers)-1].GetMaterial().RefractiveIndex
+			}
+		}
+	}
 
 	return comp
+}
+
+func (c Computations) Schlick() float64 {
+	cos := Dot(c.EyeV, c.NormalV)
+	if c.N1 > c.N2 {
+		n := c.N1 / c.N2
+		sin2t := math.Pow(n, 2) * (1 - math.Pow(cos, 2))
+		if sin2t > 1.0 {
+			return 1.0
+		}
+
+		cost := math.Sqrt(1.0 - sin2t)
+		cos = cost
+	}
+
+	r0 := math.Pow((c.N1-c.N2)/(c.N1+c.N2), 2)
+	return r0 + (1-r0)*math.Pow(1-cos, 5)
+}
+
+func checkContainers(containers []Shape, o Shape) int {
+	for i, s := range containers {
+		if o == s {
+			return i
+		}
+	}
+
+	return -1
 }

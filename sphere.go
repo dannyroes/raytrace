@@ -10,6 +10,16 @@ func Sphere() *SphereType {
 	return &SphereType{ShapeType{Transform: IdentityMatrix(), Material: Material()}}
 }
 
+func GlassSphere() *SphereType {
+	s := Sphere()
+	m := s.GetMaterial()
+	m.Transparency = 1.0
+	m.RefractiveIndex = 1.5
+	s.SetMaterial(m)
+
+	return s
+}
+
 func (s *SphereType) GetMaterial() MaterialType {
 	return s.Material
 }

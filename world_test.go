@@ -284,3 +284,145 @@ func TestInfiniteRecursion(t *testing.T) {
 	r := Ray(Point(0, 0, 0), Vector(0, 1, 0))
 	_ = w.ColourAt(r, MaxReflect)
 }
+
+func TestRefractedColour(t *testing.T) {
+	cases := []struct {
+		r         RayType
+		worldFunc func() (WorldType, IntersectionList)
+		refract   ColourTuple
+		remain    int
+		hitIndex  int
+	}{
+		{
+			r: Ray(Point(0, 0, 0), Vector(0, 0, 1)),
+			worldFunc: func() (WorldType, IntersectionList) {
+				w := DefaultWorld()
+
+				l := Intersections(Intersection(4, w.Objects[0]), Intersection(6, w.Objects[0]))
+				return w, l
+			},
+			refract: Black,
+			remain:  5,
+		},
+		{
+			r: Ray(Point(0, 0, 0), Vector(0, 0, 1)),
+			worldFunc: func() (WorldType, IntersectionList) {
+				w := DefaultWorld()
+
+				m := w.Objects[0].GetMaterial()
+				m.Transparency = 1.0
+				m.RefractiveIndex = 1.5
+				w.Objects[0].SetMaterial(m)
+
+				l := Intersections(Intersection(4, w.Objects[0]), Intersection(6, w.Objects[0]))
+				return w, l
+			},
+			refract: Black,
+			remain:  0,
+		},
+		{
+			r: Ray(Point(0, 0, math.Sqrt2/2), Vector(0, 1, 0)),
+			worldFunc: func() (WorldType, IntersectionList) {
+				w := DefaultWorld()
+
+				m := w.Objects[0].GetMaterial()
+				m.Transparency = 1.0
+				m.RefractiveIndex = 1.5
+				w.Objects[0].SetMaterial(m)
+
+				l := Intersections(Intersection(-math.Sqrt2/2, w.Objects[0]), Intersection(math.Sqrt2/2, w.Objects[0]))
+				return w, l
+			},
+			refract: Black,
+			remain:  0,
+		},
+		{
+			r: Ray(Point(0, 0, 0.1), Vector(0, 1, 0)),
+			worldFunc: func() (WorldType, IntersectionList) {
+				w := DefaultWorld()
+
+				m := w.Objects[0].GetMaterial()
+				m.Ambient = 1.0
+				m.Pattern = TestPattern()
+				w.Objects[0].SetMaterial(m)
+
+				m = w.Objects[1].GetMaterial()
+				m.Transparency = 1.0
+				m.RefractiveIndex = 1.5
+				w.Objects[1].SetMaterial(m)
+
+				l := Intersections(
+					Intersection(-0.9899, w.Objects[0]),
+					Intersection(-0.4899, w.Objects[1]),
+					Intersection(0.4899, w.Objects[1]),
+					Intersection(0.9899, w.Objects[0]),
+				)
+				return w, l
+			},
+			refract:  Colour(0, 0.99887, 0.04721),
+			remain:   5,
+			hitIndex: 2,
+		},
+	}
+
+	for _, tc := range cases {
+		w, l := tc.worldFunc()
+		c := l[tc.hitIndex].PrepareComputations(tc.r, l...)
+
+		colour := w.RefractedColour(c, tc.remain)
+		if !ColourEqual(tc.refract, colour) {
+			t.Errorf("Bad refract colour expected: %v received: %v", tc.refract, colour)
+		}
+	}
+}
+
+func TestShadeHitRefraction(t *testing.T) {
+	w := DefaultWorld()
+	floor := Plane()
+	floor.SetTransform(Translation(0, -1, 0))
+	floor.Material.Transparency = 0.5
+	floor.Material.RefractiveIndex = 1.5
+
+	ball := Sphere()
+	ball.Material.Colour = Colour(1, 0, 0)
+	ball.Material.Ambient = 0.5
+	ball.SetTransform(Translation(0, -3.5, -0.5))
+
+	w.Objects = append(w.Objects, floor, ball)
+
+	r := Ray(Point(0, 0, -3), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	xs := IntersectionList{Intersection(math.Sqrt(2), floor)}
+
+	comps := xs.Hit().PrepareComputations(r, xs...)
+	colour := w.ShadeHit(comps, 5)
+
+	if !ColourEqual(colour, Colour(0.93642, 0.68642, 0.68642)) {
+		t.Errorf("Colour mismatch expected %v received %v", Colour(0.93642, 0.68642, 0.68642), colour)
+	}
+}
+
+func TestShadeHitTransparentReflection(t *testing.T) {
+	w := DefaultWorld()
+	floor := Plane()
+	floor.SetTransform(Translation(0, -1, 0))
+	floor.Material.Reflective = 0.5
+	floor.Material.Transparency = 0.5
+	floor.Material.RefractiveIndex = 1.5
+
+	ball := Sphere()
+	ball.Material.Colour = Colour(1, 0, 0)
+	ball.Material.Ambient = 0.5
+	ball.SetTransform(Translation(0, -3.5, -0.5))
+
+	w.Objects = append(w.Objects, floor, ball)
+
+	r := Ray(Point(0, 0, -3), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	xs := IntersectionList{Intersection(math.Sqrt(2), floor)}
+
+	comps := xs.Hit().PrepareComputations(r, xs...)
+	colour := w.ShadeHit(comps, 5)
+
+	if !ColourEqual(colour, Colour(0.93391, 0.69643, 0.69243)) {
+		t.Errorf("Colour mismatch expected %v received %v", Colour(0.93642, 0.68642, 0.68642), colour)
+	}
+}

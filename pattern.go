@@ -120,3 +120,23 @@ func (p *CheckersPatternType) GetTransform() Matrix {
 func (p *CheckersPatternType) SetTransform(m Matrix) {
 	p.Transform = m
 }
+
+type TestPatternType struct {
+	Transform Matrix
+}
+
+func TestPattern() *TestPatternType {
+	return &TestPatternType{Transform: IdentityMatrix()}
+}
+
+func (p *TestPatternType) At(point Tuple) ColourTuple {
+	return Colour(point.X, point.Y, point.Z)
+}
+
+func (p *TestPatternType) GetTransform() Matrix {
+	return p.Transform
+}
+
+func (p *TestPatternType) SetTransform(m Matrix) {
+	p.Transform = m
+}
