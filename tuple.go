@@ -73,6 +73,38 @@ func FloatEqual(x, y float64) bool {
 	return math.Abs(x-y) < Epsilon
 }
 
+func FloatMin(f ...float64) float64 {
+	if len(f) < 1 {
+		return 0.0
+	}
+
+	min := f[0]
+
+	for x := 1; x < len(f); x++ {
+		if f[x] < min {
+			min = f[x]
+		}
+	}
+
+	return min
+}
+
+func FloatMax(f ...float64) float64 {
+	if len(f) < 1 {
+		return 0.0
+	}
+
+	max := f[0]
+
+	for x := 1; x < len(f); x++ {
+		if f[x] > max {
+			max = f[x]
+		}
+	}
+
+	return max
+}
+
 func Point(x, y, z float64) Tuple {
 	return Tuple{
 		X: x,

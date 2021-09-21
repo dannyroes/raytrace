@@ -101,7 +101,7 @@ func drawScene(width, height, supersample int) {
 
 	right.SetMaterial(m)
 
-	left := Sphere()
+	left := Cube()
 	left.Transform = IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
 
 	m = Material()
