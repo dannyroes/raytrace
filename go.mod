@@ -1,3 +1,3 @@
 module github.com/dannyroes/raytrace
 
-go 1.16
+go 1.17
