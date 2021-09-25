@@ -5,21 +5,26 @@ import (
 	"math"
 	"os"
 	"strconv"
+
+	"github.com/dannyroes/raytrace/data"
+	"github.com/dannyroes/raytrace/material"
+	"github.com/dannyroes/raytrace/shape"
+	"github.com/dannyroes/raytrace/world"
 )
 
 type Environment struct {
-	Gravity Tuple
-	Wind    Tuple
+	Gravity data.Tuple
+	Wind    data.Tuple
 }
 
 type Projectile struct {
-	Position Tuple
-	Velocity Tuple
+	Position data.Tuple
+	Velocity data.Tuple
 }
 
 func main() {
-	width := 500
-	height := 250
+	width := 250
+	height := 125
 	supersample := 1
 
 	fmt.Println(os.Args)
@@ -40,46 +45,46 @@ func main() {
 }
 
 func drawScene(width, height, supersample int) {
-	floor := Plane()
-	m := Material()
-	m.Pattern = CheckersPattern(Colour(1, 0.9, 0.9), Colour(1, 0.1, 0.1))
+	floor := shape.Plane()
+	m := material.Material()
+	m.Pattern = material.CheckersPattern(material.Colour(1, 0.9, 0.9), material.Colour(1, 0.1, 0.1))
 	m.Specular = 0
 	m.Reflective = 0.6
 	floor.SetMaterial(m)
 
-	ceiling := Plane()
-	ceiling.Transform = Translation(0, 10, 0)
-	m = Material()
-	m.Pattern = GradientPattern(Colour(0.9, 0.9, 0.9), Colour(0.1, 1, 0.1))
-	m.Pattern.SetTransform(Scaling(20, 20, 20).Translate(-10, -10, -10))
+	ceiling := shape.Plane()
+	ceiling.Transform = data.Translation(0, 10, 0)
+	m = material.Material()
+	m.Pattern = material.GradientPattern(material.Colour(0.9, 0.9, 0.9), material.Colour(0.1, 1, 0.1))
+	m.Pattern.SetTransform(data.Scaling(20, 20, 20).Translate(-10, -10, -10))
 	m.Specular = 0
 	ceiling.SetMaterial(m)
 
-	m = Material()
-	m.Pattern = StripePattern(Colour(1, 0.9, 0.9), Colour(0.1, 0.1, 1))
+	m = material.Material()
+	m.Pattern = material.StripePattern(material.Colour(1, 0.9, 0.9), material.Colour(0.1, 0.1, 1))
 	m.Specular = 0
-	m.Pattern.SetTransform(RotateY(2))
-	leftWall := Plane()
-	leftWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
+	m.Pattern.SetTransform(data.RotateY(2))
+	leftWall := shape.Plane()
+	leftWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
 	leftWall.SetMaterial(m)
 
-	rightWall := Plane()
-	rightWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
+	rightWall := shape.Plane()
+	rightWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
 	rightWall.SetMaterial(m)
 
-	rightBackWall := Plane()
-	rightBackWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, -15)
+	rightBackWall := shape.Plane()
+	rightBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, -15)
 	rightBackWall.SetMaterial(m)
 
-	leftBackWall := Plane()
-	leftBackWall.Transform = RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, -15)
+	leftBackWall := shape.Plane()
+	leftBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, -15)
 	leftBackWall.SetMaterial(m)
 
-	middle := Sphere()
-	middle.Transform = Translation(-0.1, 1, -0.5)
+	middle := shape.Sphere()
+	middle.Transform = data.Translation(-0.1, 1, -0.5)
 
-	m = Material()
-	m.Colour = Colour(0.5, 0.5, 0.5)
+	m = material.Material()
+	m.Colour = material.Colour(0.5, 0.5, 0.5)
 	m.Diffuse = 0.3
 	m.Specular = 1
 	m.Ambient = 0.05
@@ -90,36 +95,36 @@ func drawScene(width, height, supersample int) {
 
 	middle.SetMaterial(m)
 
-	right := Sphere()
-	right.Transform = IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
+	right := shape.Sphere()
+	right.Transform = data.IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
 
-	m = Material()
-	m.Colour = Colour(0.5, 1, 0.1)
+	m = material.Material()
+	m.Colour = material.Colour(0.5, 1, 0.1)
 	m.Diffuse = 0.7
 	m.Specular = 0.3
 	m.Reflective = 0.1
 
 	right.SetMaterial(m)
 
-	left := Cube()
-	left.Transform = IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
+	left := shape.Cube()
+	left.Transform = data.IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
 
-	m = Material()
-	m.Colour = Colour(1, 0.8, 0.1)
+	m = material.Material()
+	m.Colour = material.Colour(1, 0.8, 0.1)
 	m.Diffuse = 0.7
 	m.Specular = 0.3
 	m.Reflective = 0.1
 
 	left.SetMaterial(m)
 
-	w := World()
-	w.Light = PointLight(Point(-4, 4, -4), Colour(1, 1, 1))
+	w := world.World()
+	w.Light = world.PointLight(data.Point(-4, 4, -4), material.Colour(1, 1, 1))
 
-	c := Camera(width, height, math.Pi/3)
+	c := world.Camera(width, height, math.Pi/3)
 	c.Supersample = supersample
-	c.Transform = ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
+	c.Transform = data.ViewTransform(data.Point(0, 1.5, -5), data.Point(0, 1, 0), data.Vector(0, 1, 0))
 
-	w.Objects = []Shape{
+	w.Objects = []shape.Shape{
 		floor,
 		ceiling,
 		leftWall,
@@ -140,7 +145,7 @@ func drawScene(width, height, supersample int) {
 
 // func drawCircle() {
 // 	canvas := Canvas(500, 500)
-// 	colour := Colour(1, 0.5, 0.3)
+// 	colour := material.Colour(1, 0.5, 0.3)
 // 	sphere := Sphere()
 // 	sphere.SetTransform(Scaling(200, 100, 200).RotateZ(2.5).Translate(250, 250, 250))
 
@@ -164,10 +169,10 @@ func drawScene(width, height, supersample int) {
 // 	rayOrigin := Point(0, 0, -20)
 // 	sphere := Sphere()
 // 	sphere.SetTransform(IdentityMatrix().Scale(10, 10, 10))
-// 	sphere.Material.Colour = Colour(1, 0.2, 1)
+// 	sphere.Material.Colour = material.Colour(1, 0.2, 1)
 // 	sphere.Material.Shininess = 50
 
-// 	light := PointLight(Point(-10, 10, -10), Colour(1, 1, 1))
+// 	light := PointLight(Point(-10, 10, -10), material.Colour(1, 1, 1))
 
 // 	start := time.Now()
 
@@ -199,7 +204,7 @@ func drawScene(width, height, supersample int) {
 // 	rad := math.Pi * 2
 
 // 	start := Point(0, 225, 0)
-// 	colour := Colour(1, 1, 1)
+// 	colour := material.Colour(1, 1, 1)
 
 // 	for x := 0; x < 12; x++ {
 // 		point := IdentityMatrix().RotateZ(rad/12*float64(x)).Translate(250, 250, 0).MultiplyTuple(start)
@@ -217,7 +222,7 @@ func drawScene(width, height, supersample int) {
 // 	canvasWidth = 900
 // 	canvas := Canvas(canvasWidth, canvasHeight)
 
-// 	projColour := Colour(1, 0, 0)
+// 	projColour := material.Colour(1, 0, 0)
 // 	e := Environment{Gravity: Vector(0, -0.08, 0), Wind: Vector(-0.05, 0, 0)}
 
 // 	p := Projectile{Position: Point(0, 1, 0), Velocity: Vector(1.4, 1.8, 0).Normalize().Mul(11.25)}
