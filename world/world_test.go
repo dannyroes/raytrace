@@ -16,8 +16,7 @@ func TestWorld(t *testing.T) {
 		t.Error("Empty world contains objects")
 	}
 
-	emptyLight := Light{}
-	if w.Light != emptyLight {
+	if len(w.Lights) != 0 {
 		t.Error("Empty world contains light")
 	}
 
@@ -36,8 +35,8 @@ func TestWorld(t *testing.T) {
 
 	w = DefaultWorld()
 
-	if w.Light != l {
-		t.Errorf("Default world contains wrong light expected: %+v received: %+v", l, w.Light)
+	if w.Lights[0] != l {
+		t.Errorf("Default world contains wrong light expected: %+v received: %+v", l, w.Lights[0])
 	}
 
 	if !containsObject(w, s1) {
@@ -81,7 +80,7 @@ func TestShadeHit(t *testing.T) {
 	}{
 		{
 			w:        w,
-			l:        w.Light,
+			l:        w.Lights[0],
 			r:        data.Ray(data.Point(0, 0, -5), data.Vector(0, 0, 1)),
 			i:        shape.Intersection(4, w.Objects[0]),
 			expected: material.Colour(0.38066, 0.47583, 0.2855),
@@ -110,7 +109,7 @@ func TestShadeHit(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc.w.Light = tc.l
+		tc.w.Lights = []Light{tc.l}
 		comp := tc.i.PrepareComputations(tc.r)
 		result := tc.w.ShadeHit(comp, 1)
 
@@ -190,7 +189,7 @@ func TestIsShadowed(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		result := tc.w.IsShadowed(tc.p)
+		result := tc.w.IsShadowed(tc.p, 0)
 
 		if tc.expected != result {
 			t.Errorf("Shadow mismatch expected: %+v received %+v", tc.expected, result)
@@ -293,7 +292,7 @@ func TestReflectedColour(t *testing.T) {
 
 func TestInfiniteRecursion(t *testing.T) {
 	w := World()
-	w.Light = PointLight(data.Point(0, 0, 0), material.Colour(1, 1, 1))
+	w.Lights = []Light{PointLight(data.Point(0, 0, 0), material.Colour(1, 1, 1))}
 
 	lower := shape.Plane()
 	m := material.Material()

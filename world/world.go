@@ -10,7 +10,7 @@ import (
 
 type WorldType struct {
 	Objects []shape.Shape
-	Light   Light
+	Lights  []Light
 }
 
 func World() WorldType {
@@ -33,7 +33,7 @@ func DefaultWorld() WorldType {
 
 	return WorldType{
 		Objects: []shape.Shape{s1, s2},
-		Light:   l,
+		Lights:  []Light{l},
 	}
 }
 
@@ -47,15 +47,29 @@ func (w WorldType) Intersect(r data.RayType) shape.IntersectionList {
 }
 
 func (w WorldType) ShadeHit(c shape.Computations, remain int) material.ColourTuple {
-	surface := Lighting(
-		c.Object.GetMaterial(),
-		c.Object,
-		w.Light,
-		c.OverPoint,
-		c.EyeV,
-		c.NormalV,
-		w.IsShadowed(c.OverPoint),
-	)
+	surface := material.Colour(0, 0, 0)
+
+	for i, l := range w.Lights {
+		surface = surface.Add(Lighting(
+			c.Object.GetMaterial(),
+			c.Object,
+			l,
+			c.OverPoint,
+			c.EyeV,
+			c.NormalV,
+			w.IsShadowed(c.OverPoint, i),
+		))
+	}
+
+	// surface := Lighting(
+	// 	c.Object.GetMaterial(),
+	// 	c.Object,
+	// 	w.Light,
+	// 	c.OverPoint,
+	// 	c.EyeV,
+	// 	c.NormalV,
+	// 	w.IsShadowed(c.OverPoint),
+	// )
 
 	reflect := w.ReflectedColour(c, remain)
 	refract := w.RefractedColour(c, remain)
@@ -69,8 +83,8 @@ func (w WorldType) ShadeHit(c shape.Computations, remain int) material.ColourTup
 	return surface.Add(reflect).Add(refract)
 }
 
-func (w WorldType) IsShadowed(p data.Tuple) bool {
-	v := w.Light.Position.Sub(p)
+func (w WorldType) IsShadowed(p data.Tuple, lightIndex int) bool {
+	v := w.Lights[lightIndex].Position.Sub(p)
 	distance := v.Magnitude()
 	direction := v.Normalize()
 	r := data.Ray(p, direction)

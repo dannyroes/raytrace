@@ -76,7 +76,7 @@ func LoadScene(filename string) (*CameraType, WorldType, error) {
 			case "sphere", "cube", "plane":
 				w.Objects = append(w.Objects, processObject(item))
 			case "light":
-				w.Light = processLight(item)
+				w.Lights = append(w.Lights, processLight(item))
 			}
 		} else if name, exists := item["define"]; exists {
 			var result interface{}
