@@ -20,12 +20,14 @@ type CameraType struct {
 	FieldOfView float64
 	Transform   data.Matrix
 	PixelSize   float64
+	Verbose     bool
 	halfWidth   float64
 	halfHeight  float64
 }
 
 func Camera(hsize, vsize int, fieldOfView float64) *CameraType {
 	c := &CameraType{HSize: hsize, VSize: vsize, FieldOfView: fieldOfView, Transform: data.IdentityMatrix()}
+	c.Supersample = 1
 	c.CalcPixelSize()
 	return c
 }
@@ -68,7 +70,7 @@ func (c *CameraType) Render(w WorldType) CanvasType {
 		c.VSize = c.VSize * c.Supersample
 		c.CalcPixelSize()
 	}
-	fmt.Printf("Rendering width %d; height %d\n", c.HSize, c.VSize)
+	c.log("Rendering width %d; height %d\n", c.HSize, c.VSize)
 	image = Canvas(c.HSize, c.VSize)
 
 	in := make(chan PixelJob)
@@ -86,7 +88,7 @@ func (c *CameraType) Render(w WorldType) CanvasType {
 		close(out)
 	}()
 
-	fmt.Println("Beginning render")
+	c.log("Beginning render\n")
 
 	p := 0
 	t := time.Now()
@@ -100,21 +102,38 @@ func (c *CameraType) Render(w WorldType) CanvasType {
 		close(in)
 	}()
 
+	lastUpdate := time.Now().Add(-5 * time.Second)
+	totalPixels := c.HSize * c.VSize
+
 	for pixel := range out {
 		image.WritePixel(pixel.x, pixel.y, pixel.c)
 		p++
+		if time.Since(lastUpdate) > 1*time.Second {
+			lastUpdate = time.Now()
+			passed := time.Since(t)
+			complete := float64(totalPixels) / float64(p)
+			estimate := time.Duration(passed.Seconds()*complete)*time.Second - passed
+
+			c.log("Elapsed: %v, estimate remaining: %-10v\r", passed.Truncate(time.Second), estimate.Truncate(time.Second))
+		}
 	}
 
 	duration := time.Since(t)
-	fmt.Printf("Rendered %d pixels in %v\n", p, duration)
+	c.log("Rendered %d pixels in %v\n", p, duration)
 
 	if c.Supersample > 1 {
 		c.HSize = c.HSize / c.Supersample
 		c.VSize = c.VSize / c.Supersample
-		fmt.Printf("Downsampling to %dx%d\n", c.HSize, c.VSize)
+		c.log("Downsampling to %dx%d\n", c.HSize, c.VSize)
 		image = downsample(image, c.HSize, c.VSize)
 	}
 	return image
+}
+
+func (c *CameraType) log(msg string, items ...interface{}) {
+	if c.Verbose {
+		fmt.Printf(msg, items...)
+	}
 }
 
 func downsample(image CanvasType, width, height int) CanvasType {

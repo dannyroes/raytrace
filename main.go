@@ -54,6 +54,7 @@ func drawFromYaml(f string) {
 		return
 	}
 
+	c.Verbose = true
 	image := c.Render(w)
 	err = image.ToPNG("output/scene.png")
 	if err != nil {
