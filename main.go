@@ -2,13 +2,9 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
-	"strconv"
 
 	"github.com/dannyroes/raytrace/data"
-	"github.com/dannyroes/raytrace/material"
-	"github.com/dannyroes/raytrace/shape"
 	"github.com/dannyroes/raytrace/world"
 )
 
@@ -23,125 +19,146 @@ type Projectile struct {
 }
 
 func main() {
-	width := 250
-	height := 125
-	supersample := 1
+	filename := "scene.yml"
 
-	fmt.Println(os.Args)
-
-	if len(os.Args) == 3 {
-		w, err := strconv.Atoi(os.Args[1])
-		if err == nil {
-			h, err := strconv.Atoi(os.Args[2])
-			if err == nil {
-				width = w
-				height = h
-			}
-		}
+	if len(os.Args) == 2 {
+		filename = os.Args[1]
 	}
 
-	drawScene(width, height, supersample)
-	fmt.Println("Done!")
+	drawFromYaml(filename)
+	// width := 250
+	// height := 125
+	// supersample := 1
+
+	// fmt.Println(os.Args)
+
+	// if len(os.Args) == 3 {
+	// 	w, err := strconv.Atoi(os.Args[1])
+	// 	if err == nil {
+	// 		h, err := strconv.Atoi(os.Args[2])
+	// 		if err == nil {
+	// 			width = w
+	// 			height = h
+	// 		}
+	// 	}
+	// }
+
+	// drawScene(width, height, supersample)
+	// fmt.Println("Done!")
 }
 
-func drawScene(width, height, supersample int) {
-	floor := shape.Plane()
-	m := material.Material()
-	m.Pattern = material.CheckersPattern(material.Colour(1, 0.9, 0.9), material.Colour(1, 0.1, 0.1))
-	m.Specular = 0
-	m.Reflective = 0.6
-	floor.SetMaterial(m)
-
-	ceiling := shape.Plane()
-	ceiling.Transform = data.Translation(0, 10, 0)
-	m = material.Material()
-	m.Pattern = material.GradientPattern(material.Colour(0.9, 0.9, 0.9), material.Colour(0.1, 1, 0.1))
-	m.Pattern.SetTransform(data.Scaling(20, 20, 20).Translate(-10, -10, -10))
-	m.Specular = 0
-	ceiling.SetMaterial(m)
-
-	m = material.Material()
-	m.Pattern = material.StripePattern(material.Colour(1, 0.9, 0.9), material.Colour(0.1, 0.1, 1))
-	m.Specular = 0
-	m.Pattern.SetTransform(data.RotateY(2))
-	leftWall := shape.Plane()
-	leftWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
-	leftWall.SetMaterial(m)
-
-	rightWall := shape.Plane()
-	rightWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
-	rightWall.SetMaterial(m)
-
-	rightBackWall := shape.Plane()
-	rightBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, -15)
-	rightBackWall.SetMaterial(m)
-
-	leftBackWall := shape.Plane()
-	leftBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, -15)
-	leftBackWall.SetMaterial(m)
-
-	middle := shape.Sphere()
-	middle.Transform = data.Translation(-0.1, 1, -0.5)
-
-	m = material.Material()
-	m.Colour = material.Colour(0.5, 0.5, 0.5)
-	m.Diffuse = 0.3
-	m.Specular = 1
-	m.Ambient = 0.05
-	m.Shininess = 300
-	m.Reflective = 0.9
-	m.Transparency = 0.9
-	m.RefractiveIndex = 1.52
-
-	middle.SetMaterial(m)
-
-	right := shape.Sphere()
-	right.Transform = data.IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
-
-	m = material.Material()
-	m.Colour = material.Colour(0.5, 1, 0.1)
-	m.Diffuse = 0.7
-	m.Specular = 0.3
-	m.Reflective = 0.1
-
-	right.SetMaterial(m)
-
-	left := shape.Cube()
-	left.Transform = data.IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
-
-	m = material.Material()
-	m.Colour = material.Colour(1, 0.8, 0.1)
-	m.Diffuse = 0.7
-	m.Specular = 0.3
-	m.Reflective = 0.1
-
-	left.SetMaterial(m)
-
-	w := world.World()
-	w.Light = world.PointLight(data.Point(-4, 4, -4), material.Colour(1, 1, 1))
-
-	c := world.Camera(width, height, math.Pi/3)
-	c.Supersample = supersample
-	c.Transform = data.ViewTransform(data.Point(0, 1.5, -5), data.Point(0, 1, 0), data.Vector(0, 1, 0))
-
-	w.Objects = []shape.Shape{
-		floor,
-		ceiling,
-		leftWall,
-		rightWall,
-		leftBackWall,
-		rightBackWall,
-		middle,
-		left,
-		right,
+func drawFromYaml(f string) {
+	c, w, err := world.LoadScene(f)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+
 	image := c.Render(w)
-	// ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
-	err := image.ToPNG("output/scene.png")
+	err = image.ToPNG("output/scene.png")
 	if err != nil {
 		fmt.Println(err)
 	}
 }
+
+// func drawScene(width, height, supersample int) {
+// 	floor := shape.Plane()
+// 	m := material.Material()
+// 	m.Pattern = material.CheckersPattern(material.Colour(1, 0.9, 0.9), material.Colour(1, 0.1, 0.1))
+// 	m.Specular = 0
+// 	m.Reflective = 0.6
+// 	floor.SetMaterial(m)
+
+// 	ceiling := shape.Plane()
+// 	ceiling.Transform = data.Translation(0, 10, 0)
+// 	m = material.Material()
+// 	m.Pattern = material.GradientPattern(material.Colour(0.9, 0.9, 0.9), material.Colour(0.1, 1, 0.1))
+// 	m.Pattern.SetTransform(data.Scaling(20, 20, 20).Translate(-10, -10, -10))
+// 	m.Specular = 0
+// 	ceiling.SetMaterial(m)
+
+// 	m = material.Material()
+// 	m.Pattern = material.StripePattern(material.Colour(1, 0.9, 0.9), material.Colour(0.1, 0.1, 1))
+// 	m.Specular = 0
+// 	m.Pattern.SetTransform(data.RotateY(2))
+// 	leftWall := shape.Plane()
+// 	leftWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, 5)
+// 	leftWall.SetMaterial(m)
+
+// 	rightWall := shape.Plane()
+// 	rightWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, 5)
+// 	rightWall.SetMaterial(m)
+
+// 	rightBackWall := shape.Plane()
+// 	rightBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4).Translate(0, 0, -15)
+// 	rightBackWall.SetMaterial(m)
+
+// 	leftBackWall := shape.Plane()
+// 	leftBackWall.Transform = data.RotateX(math.Pi/2).RotateY(math.Pi/4*-1).Translate(0, 0, -15)
+// 	leftBackWall.SetMaterial(m)
+
+// 	middle := shape.Sphere()
+// 	middle.Transform = data.Translation(-0.1, 1, -0.5)
+
+// 	m = material.Material()
+// 	m.Colour = material.Colour(0.5, 0.5, 0.5)
+// 	m.Diffuse = 0.3
+// 	m.Specular = 1
+// 	m.Ambient = 0.05
+// 	m.Shininess = 300
+// 	m.Reflective = 0.9
+// 	m.Transparency = 0.9
+// 	m.RefractiveIndex = 1.52
+
+// 	middle.SetMaterial(m)
+
+// 	right := shape.Sphere()
+// 	right.Transform = data.IdentityMatrix().Scale(0.5, 0.5, 0.5).Translate(1.5, 0.5, -0.5)
+
+// 	m = material.Material()
+// 	m.Colour = material.Colour(0.5, 1, 0.1)
+// 	m.Diffuse = 0.7
+// 	m.Specular = 0.3
+// 	m.Reflective = 0.1
+
+// 	right.SetMaterial(m)
+
+// 	left := shape.Cube()
+// 	left.Transform = data.IdentityMatrix().Scale(0.33, 0.33, 0.33).Translate(-1.5, 0.33, -0.75)
+
+// 	m = material.Material()
+// 	m.Colour = material.Colour(1, 0.8, 0.1)
+// 	m.Diffuse = 0.7
+// 	m.Specular = 0.3
+// 	m.Reflective = 0.1
+
+// 	left.SetMaterial(m)
+
+// 	w := world.World()
+// 	w.Light = world.PointLight(data.Point(-4, 4, -4), material.Colour(1, 1, 1))
+
+// 	c := world.Camera(width, height, math.Pi/3)
+// 	c.Supersample = supersample
+// 	c.Transform = data.ViewTransform(data.Point(0, 1.5, -5), data.Point(0, 1, 0), data.Vector(0, 1, 0))
+
+// 	w.Objects = []shape.Shape{
+// 		floor,
+// 		ceiling,
+// 		leftWall,
+// 		rightWall,
+// 		leftBackWall,
+// 		rightBackWall,
+// 		middle,
+// 		left,
+// 		right,
+// 	}
+// 	image := c.Render(w)
+// 	// ioutil.WriteFile("output/scene.ppm", []byte(image.ToPPM()), 0755)
+// 	err := image.ToPNG("output/scene.png")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// }
 
 // func drawCircle() {
 // 	canvas := Canvas(500, 500)
