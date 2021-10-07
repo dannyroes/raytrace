@@ -40,9 +40,10 @@ type SceneMaterial struct {
 }
 
 type ScenePattern struct {
-	Type string
-	A    []float64
-	B    []float64
+	Type      string
+	A         []float64
+	B         []float64
+	Transform [][]interface{}
 }
 
 type SceneLight struct {
@@ -222,6 +223,26 @@ func processMaterial(mat SceneMaterial) material.MaterialType {
 	}
 	if mat.RefractiveIndex != nil {
 		m.RefractiveIndex = *mat.RefractiveIndex
+	}
+
+	if mat.Pattern != nil {
+		var p material.Pattern
+		switch mat.Pattern.Type {
+		case "stripe":
+			p = material.StripePattern(sliceToColour(mat.Pattern.A), sliceToColour(mat.Pattern.B))
+		case "gradient":
+			p = material.GradientPattern(sliceToColour(mat.Pattern.A), sliceToColour(mat.Pattern.B))
+		case "ring":
+			p = material.RingPattern(sliceToColour(mat.Pattern.A), sliceToColour(mat.Pattern.B))
+		case "checkers":
+			p = material.CheckersPattern(sliceToColour(mat.Pattern.A), sliceToColour(mat.Pattern.B))
+		}
+
+		if len(mat.Pattern.Transform) > 0 {
+			p.SetTransform(processTransform(mat.Pattern.Transform))
+		}
+
+		m.Pattern = p
 	}
 
 	return m

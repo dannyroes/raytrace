@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	movingaverage "github.com/RobinUS2/golang-moving-average"
 	"github.com/dannyroes/raytrace/data"
 	"github.com/dannyroes/raytrace/material"
 )
@@ -102,24 +103,29 @@ func (c *CameraType) Render(w WorldType) CanvasType {
 		close(in)
 	}()
 
-	lastUpdate := time.Now().Add(-5 * time.Second)
+	lastUpdate := time.Now()
 	totalPixels := c.HSize * c.VSize
+	lastPixels := 0
+	ma := movingaverage.New(30)
 
 	for pixel := range out {
 		image.WritePixel(pixel.x, pixel.y, pixel.c)
 		p++
-		if time.Since(lastUpdate) > 1*time.Second {
+		if c.Verbose && time.Since(lastUpdate) > 1*time.Second {
 			lastUpdate = time.Now()
 			passed := time.Since(t)
-			complete := float64(totalPixels) / float64(p)
-			estimate := time.Duration(passed.Seconds()*complete)*time.Second - passed
+			pixelsSince := p - lastPixels
+			ma.Add(float64(pixelsSince))
+			lastPixels = p
+			remain := time.Duration(float64(totalPixels-p)/ma.Avg()) * time.Second
+			percent := float64(p) / float64(totalPixels) * 100
 
-			c.log("Elapsed: %v, estimate remaining: %-10v\r", passed.Truncate(time.Second), estimate.Truncate(time.Second))
+			c.log("Elapsed: %v - %.2f%% complete, estimate remaining: %-10v\r", passed.Truncate(time.Second), percent, remain.Truncate(time.Second))
 		}
 	}
 
 	duration := time.Since(t)
-	c.log("Rendered %d pixels in %v\n", p, duration)
+	c.log("Rendered %d pixels in %-40v\n", p, duration)
 
 	if c.Supersample > 1 {
 		c.HSize = c.HSize / c.Supersample
