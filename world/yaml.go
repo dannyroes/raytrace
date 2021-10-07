@@ -27,6 +27,13 @@ type SceneObject struct {
 	Transform [][]interface{}
 }
 
+type SceneCylinder struct {
+	SceneObject
+	Minimum *float64
+	Maximum *float64
+	Closed  *bool
+}
+
 type SceneMaterial struct {
 	Colour          *[]float64
 	Diffuse         *float64
@@ -74,7 +81,7 @@ func LoadScene(filename string) (*CameraType, WorldType, error) {
 			switch t {
 			case "camera":
 				c = processCamera(item)
-			case "sphere", "cube", "plane":
+			case "sphere", "cube", "plane", "cylinder":
 				w.Objects = append(w.Objects, processObject(item))
 			case "light":
 				w.Lights = append(w.Lights, processLight(item))
@@ -182,6 +189,25 @@ func processObject(item map[string]interface{}) shape.Shape {
 		obj = shape.Cube()
 	case "plane":
 		obj = shape.Plane()
+	case "cylinder":
+		obj = shape.Cylinder()
+		var c SceneCylinder
+		err := mapstructure.Decode(item, &c)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		if c.Minimum != nil {
+			obj.(*shape.CylinderType).Minimum = *c.Minimum
+		}
+
+		if c.Maximum != nil {
+			obj.(*shape.CylinderType).Maximum = *c.Maximum
+		}
+		if c.Closed != nil {
+			obj.(*shape.CylinderType).Closed = *c.Closed
+		}
+
 	}
 
 	mat := material.Material()

@@ -1,6 +1,6 @@
 - add: camera
-  width: 1200
-  height: 800
+  width: 200
+  height: 150
   field-of-view: 0.885
   from: [4, -3, 8]
   to: [0, -6, 0]
@@ -126,6 +126,18 @@
     - table-objects-transform
 
 - add: cube
+  closed: true
+  minimum: 1
+  maximum: 1
+  material:
+    colour: [0.1,0.4,0.9]
+    specular: 0.8
+  transform:
+    - [scale, 0.3, 1.1, 0.3]
+    - [translate, -2, 0.1, 2.5]
+    - table-objects-transform
+
+- add: cube
   material:
     colour: [0.3,0.3,0.3]
     ambient: 0.4
@@ -154,23 +166,23 @@
 - add: cube
   material: frame-material
   transform:
-    - [scale, 0.1, 1.6, 0.1]
+    - [scale, 0.1, 1.7, 0.1]
     - [translate, -2.1, -5, -10]
 
 - add: cube
   material: frame-material
   transform:
-    - [scale, 0.1, 1.6, 0.1]
+    - [scale, 0.1, 1.7, 0.1]
     - [translate, 2.1, -5, -10]
 
 - add: cube
   material: frame-material
   transform:
-    - [scale, 2.1, 0.1, 0.1]
+    - [scale, 2.2, 0.1, 0.1]
     - [translate, 0, -6.6, -10]
 
 - add: cube
   material: frame-material
   transform:
-    - [scale, 2.1, 0.1, 0.1]
+    - [scale, 2.2, 0.1, 0.1]
     - [translate, 0, -3.4, -10]
