@@ -86,11 +86,11 @@ func (cyl *CylinderType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 	return data.Vector(objectPoint.X, 0, objectPoint.Z)
 }
 
-func checkCap(r data.RayType, t float64) bool {
+func checkCap(r data.RayType, t, y float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z
 
-	return math.Pow(x, 2)+math.Pow(z, 2) <= 1
+	return math.Pow(x, 2)+math.Pow(z, 2) <= y*y
 }
 
 func (cyl *CylinderType) intersectCaps(r data.RayType, xs IntersectionList) IntersectionList {
@@ -99,12 +99,12 @@ func (cyl *CylinderType) intersectCaps(r data.RayType, xs IntersectionList) Inte
 	}
 
 	t := (cyl.Minimum - r.Origin.Y) / r.Direction.Y
-	if checkCap(r, t) {
+	if checkCap(r, t, 1) {
 		xs = append(xs, Intersection(t, cyl))
 	}
 
 	t = (cyl.Maximum - r.Origin.Y) / r.Direction.Y
-	if checkCap(r, t) {
+	if checkCap(r, t, 1) {
 		xs = append(xs, Intersection(t, cyl))
 	}
 
