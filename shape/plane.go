@@ -43,3 +43,11 @@ func (p *PlaneType) LocalIntersect(r data.RayType) IntersectionList {
 func (p *PlaneType) LocalNormalAt(point data.Tuple) data.Tuple {
 	return data.Vector(0, 1, 0)
 }
+
+func (p *PlaneType) GetParent() *GroupType {
+	return p.Parent
+}
+
+func (p *PlaneType) SetParent(parent *GroupType) {
+	p.Parent = parent
+}

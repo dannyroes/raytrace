@@ -1,7 +1,6 @@
 package shape
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/dannyroes/raytrace/data"
@@ -91,6 +90,14 @@ func (cone *ConeType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 	return data.Vector(objectPoint.X, y, objectPoint.Z)
 }
 
+func (cone *ConeType) GetParent() *GroupType {
+	return cone.Parent
+}
+
+func (cone *ConeType) SetParent(p *GroupType) {
+	cone.Parent = p
+}
+
 // func checkCap(r data.RayType, t float64) bool {
 // 	x := r.Origin.X + t*r.Direction.X
 // 	z := r.Origin.Z + t*r.Direction.Z
@@ -99,7 +106,6 @@ func (cone *ConeType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 // }
 
 func (cone *ConeType) intersectCaps(r data.RayType, xs IntersectionList) IntersectionList {
-	fmt.Println(xs)
 	if !cone.Closed || data.FloatEqual(r.Direction.Y, 0) {
 		return xs
 	}
@@ -113,8 +119,6 @@ func (cone *ConeType) intersectCaps(r data.RayType, xs IntersectionList) Interse
 	if checkCap(r, t, cone.Maximum) {
 		xs = append(xs, Intersection(t, cone))
 	}
-
-	fmt.Println(xs)
 
 	return xs
 }

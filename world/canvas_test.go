@@ -1,7 +1,6 @@
 package world
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -96,8 +95,6 @@ func TestCanvasToPPMLineWrap(t *testing.T) {
 	lines := strings.Split(p, "\n")
 	lines = lines[3:]
 	pixels := strings.Join(lines, "\n")
-	fmt.Println(expected, len(expected))
-	fmt.Println(pixels, len(pixels))
 	if pixels != expected {
 		t.Errorf("Expected '%s', received '%s'", expected, pixels)
 	}

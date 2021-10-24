@@ -62,3 +62,11 @@ func (s *SphereType) GetTransform() data.Matrix {
 func (s *SphereType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 	return objectPoint.Sub(data.Point(0, 0, 0))
 }
+
+func (s *SphereType) GetParent() *GroupType {
+	return s.Parent
+}
+
+func (s *SphereType) SetParent(p *GroupType) {
+	s.Parent = p
+}

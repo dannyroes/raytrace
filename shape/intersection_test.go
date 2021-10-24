@@ -1,7 +1,6 @@
 package shape
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -186,7 +185,6 @@ func TestOffsetHit(t *testing.T) {
 
 	for _, tc := range cases {
 		c := tc.i.PrepareComputations(tc.r, tc.i)
-		fmt.Println(c)
 		if c.OverPoint.Z >= tc.offset {
 			t.Errorf("Offset not applied expected <: %v received: %v", tc.offset, c.OverPoint.Z)
 		}

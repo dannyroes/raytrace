@@ -54,6 +54,14 @@ func (c *CubeType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 	return data.Vector(0, 0, objectPoint.Z)
 }
 
+func (c *CubeType) GetParent() *GroupType {
+	return c.Parent
+}
+
+func (c *CubeType) SetParent(p *GroupType) {
+	c.Parent = p
+}
+
 func Cube() *CubeType {
 	return &CubeType{}
 }

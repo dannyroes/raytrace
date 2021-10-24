@@ -86,6 +86,14 @@ func (cyl *CylinderType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
 	return data.Vector(objectPoint.X, 0, objectPoint.Z)
 }
 
+func (cyl *CylinderType) GetParent() *GroupType {
+	return cyl.Parent
+}
+
+func (cyl *CylinderType) SetParent(p *GroupType) {
+	cyl.Parent = p
+}
+
 func checkCap(r data.RayType, t, y float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z

@@ -12,6 +12,7 @@ type MockShape struct{}
 
 var savedRay data.RayType
 var transform data.Matrix
+var parent *GroupType
 
 func (s *MockShape) GetMaterial() material.MaterialType {
 	return material.Material()
@@ -36,6 +37,14 @@ func (s *MockShape) LocalIntersect(r data.RayType) IntersectionList {
 
 func (s *MockShape) LocalNormalAt(t data.Tuple) data.Tuple {
 	return data.Vector(t.X, t.Y, t.Z)
+}
+
+func (s *MockShape) GetParent() *GroupType {
+	return parent
+}
+
+func (s *MockShape) SetParent(p *GroupType) {
+	parent = p
 }
 
 func TestIntersect(t *testing.T) {
@@ -151,5 +160,14 @@ func TestPatternTransform(t *testing.T) {
 		if !material.ColourEqual(at, tc.expected) {
 			t.Errorf("Pattern mismatch at %+v expected %+v received %+v", tc.point, tc.expected, at)
 		}
+	}
+}
+
+func TestParent(t *testing.T) {
+	parent = nil
+	s := MockShape{}
+
+	if s.GetParent() != nil {
+		t.Errorf("Mock shape has a parent")
 	}
 }

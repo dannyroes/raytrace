@@ -8,6 +8,7 @@ import (
 type ShapeType struct {
 	Transform data.Matrix
 	Material  material.MaterialType
+	Parent    *GroupType
 }
 
 type Shape interface {
@@ -17,6 +18,8 @@ type Shape interface {
 	SetTransform(data.Matrix)
 	LocalIntersect(data.RayType) IntersectionList
 	LocalNormalAt(data.Tuple) data.Tuple
+	GetParent() *GroupType
+	SetParent(*GroupType)
 }
 
 func Intersects(s Shape, r data.RayType) IntersectionList {
@@ -25,15 +28,14 @@ func Intersects(s Shape, r data.RayType) IntersectionList {
 }
 
 func NormalAt(s Shape, p data.Tuple) data.Tuple {
-	objectPoint := toObjectSpace(s, p)
+	localPoint := worldToObject(s, p)
+	objectNormal := s.LocalNormalAt(localPoint)
 
-	objectNormal := s.LocalNormalAt(objectPoint)
-
-	return toWorldNormal(s, objectNormal)
+	return normalToWorld(s, objectNormal)
 }
 
 func PatternAtObject(p material.Pattern, o Shape, point data.Tuple) material.ColourTuple {
-	objectPoint := o.GetTransform().Invert().MultiplyTuple(point)
+	objectPoint := worldToObject(o, point)
 	patternPoint := p.GetTransform().Invert().MultiplyTuple(objectPoint)
 
 	return p.At(patternPoint)
@@ -44,13 +46,22 @@ func transformRay(o Shape, r data.RayType) data.RayType {
 	return r.Transform(inverse)
 }
 
-func toObjectSpace(o Shape, point data.Tuple) data.Tuple {
+func worldToObject(o Shape, point data.Tuple) data.Tuple {
+	if o.GetParent() != nil {
+		point = worldToObject(o.GetParent(), point)
+	}
+
 	return o.GetTransform().Invert().MultiplyTuple(point)
 }
 
-func toWorldNormal(o Shape, vector data.Tuple) data.Tuple {
-	worldNormal := o.GetTransform().Invert().Transpose().MultiplyTuple(vector)
-	worldNormal.W = 0
+func normalToWorld(o Shape, normal data.Tuple) data.Tuple {
+	normal = o.GetTransform().Invert().Transpose().MultiplyTuple(normal)
+	normal.W = 0
+	normal = normal.Normalize()
 
-	return worldNormal.Normalize()
+	if o.GetParent() != nil {
+		normal = normalToWorld(o.GetParent(), normal)
+	}
+
+	return normal
 }
