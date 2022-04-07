@@ -19,6 +19,9 @@ type Projectile struct {
 }
 
 func main() {
+	hexScene()
+	return
+
 	filename := "scene.yml"
 
 	if len(os.Args) == 2 {
