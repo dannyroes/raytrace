@@ -15,7 +15,14 @@ type ConeType struct {
 }
 
 func Cone() *ConeType {
-	return &ConeType{Minimum: math.Inf(-1), Maximum: math.Inf(1)}
+	return &ConeType{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		ShapeType: ShapeType{
+			Material:  material.Material(),
+			Transform: data.IdentityMatrix(),
+		},
+	}
 }
 
 func (cone *ConeType) GetMaterial() material.MaterialType {

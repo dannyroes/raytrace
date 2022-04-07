@@ -15,7 +15,13 @@ type CylinderType struct {
 }
 
 func Cylinder() *CylinderType {
-	return &CylinderType{Minimum: math.Inf(-1), Maximum: math.Inf(1)}
+	return &CylinderType{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		ShapeType: ShapeType{
+			Material:  material.Material(),
+			Transform: data.IdentityMatrix(),
+		}}
 }
 
 func (cyl *CylinderType) GetMaterial() material.MaterialType {

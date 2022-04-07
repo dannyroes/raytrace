@@ -63,7 +63,12 @@ func (c *CubeType) SetParent(p *GroupType) {
 }
 
 func Cube() *CubeType {
-	return &CubeType{}
+	return &CubeType{
+		ShapeType: ShapeType{
+			Material:  material.Material(),
+			Transform: data.IdentityMatrix(),
+		},
+	}
 }
 
 func (c *CubeType) Bounds() Bounds {
