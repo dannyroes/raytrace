@@ -186,3 +186,76 @@ func TestGroupNormal(t *testing.T) {
 		t.Errorf("Bad normal expected %v received %v", expected, point)
 	}
 }
+
+func TestGroupBounds(t *testing.T) {
+	cases := []struct {
+		g        *GroupType
+		expected Bounds
+	}{
+		{
+			g: func() *GroupType {
+				g := Group()
+				c := Cube()
+				c.SetTransform(data.IdentityMatrix())
+				g.AddChild(c)
+				return g
+			}(),
+			expected: Bounds{Min: data.Point(-1, -1, -1), Max: data.Point(1, 1, 1)},
+		},
+		{
+			g: func() *GroupType {
+				g := Group()
+				c := Cube()
+				c.SetTransform(data.IdentityMatrix().Scale(1, 2, 3))
+				g.AddChild(c)
+				return g
+			}(),
+			expected: Bounds{Min: data.Point(-1, -2, -3), Max: data.Point(1, 2, 3)},
+		},
+		{
+			g: func() *GroupType {
+				g := Group()
+				c := Cube()
+				c.SetTransform(data.IdentityMatrix().Translate(-1, 0, 0))
+				g.AddChild(c)
+				return g
+			}(),
+			expected: Bounds{Min: data.Point(-2, -1, -1), Max: data.Point(0, 1, 1)},
+		},
+		{
+			g: func() *GroupType {
+				g := Group()
+				c := Cube()
+				c.SetTransform(data.IdentityMatrix().RotateX(math.Pi / 4))
+				g.AddChild(c)
+				return g
+			}(),
+			expected: Bounds{Min: data.Point(-1, -math.Sqrt2, -math.Sqrt2), Max: data.Point(1, math.Sqrt2, math.Sqrt2)},
+		},
+		{
+			g: func() *GroupType {
+				g := Group()
+				c := Cube()
+				c.SetTransform(data.IdentityMatrix().RotateX(math.Pi / 4))
+				g.AddChild(c)
+
+				c2 := Cube()
+				c2.SetTransform(data.IdentityMatrix().Translate(0, 0, 2))
+				g.AddChild(c2)
+				return g
+			}(),
+			expected: Bounds{Min: data.Point(-1, -math.Sqrt2, -math.Sqrt2), Max: data.Point(1, math.Sqrt2, 3)},
+		},
+	}
+
+	for _, c := range cases {
+		b := c.g.Bounds()
+		if !data.TupleEqual(b.Min, c.expected.Min) {
+			t.Errorf("Min mismatch expected %v received %v", c.expected.Min, b.Min)
+		}
+
+		if !data.TupleEqual(b.Max, c.expected.Max) {
+			t.Errorf("Max mismatch expected %v received %v", c.expected.Max, b.Max)
+		}
+	}
+}

@@ -70,3 +70,10 @@ func (s *SphereType) GetParent() *GroupType {
 func (s *SphereType) SetParent(p *GroupType) {
 	s.Parent = p
 }
+
+func (s *SphereType) Bounds() Bounds {
+	return Bounds{
+		Min: data.Point(-1, -1, -1),
+		Max: data.Point(1, 1, 1),
+	}
+}

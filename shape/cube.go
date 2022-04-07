@@ -66,6 +66,13 @@ func Cube() *CubeType {
 	return &CubeType{}
 }
 
+func (c *CubeType) Bounds() Bounds {
+	return Bounds{
+		Min: data.Point(-1, -1, -1),
+		Max: data.Point(1, 1, 1),
+	}
+}
+
 func checkAxis(origin, direction float64) (float64, float64) {
 	tminNum := -1 - origin
 	tmaxNum := 1 - origin

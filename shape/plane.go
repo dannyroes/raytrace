@@ -51,3 +51,10 @@ func (p *PlaneType) GetParent() *GroupType {
 func (p *PlaneType) SetParent(parent *GroupType) {
 	p.Parent = parent
 }
+
+func (p *PlaneType) Bounds() Bounds {
+	return Bounds{
+		Min: data.Point(math.Inf(-1), 0, math.Inf(-1)),
+		Max: data.Point(math.Inf(1), 0, math.Inf(1)),
+	}
+}

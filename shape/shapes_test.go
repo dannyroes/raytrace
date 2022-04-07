@@ -47,6 +47,13 @@ func (s *MockShape) SetParent(p *GroupType) {
 	parent = p
 }
 
+func (s *MockShape) Bounds() Bounds {
+	return Bounds{
+		Min: data.Point(-1, -1, -1),
+		Max: data.Point(1, 1, 1),
+	}
+}
+
 func TestIntersect(t *testing.T) {
 	cases := []struct {
 		t        data.Matrix

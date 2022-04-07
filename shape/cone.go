@@ -98,12 +98,17 @@ func (cone *ConeType) SetParent(p *GroupType) {
 	cone.Parent = p
 }
 
-// func checkCap(r data.RayType, t float64) bool {
-// 	x := r.Origin.X + t*r.Direction.X
-// 	z := r.Origin.Z + t*r.Direction.Z
+func (cone *ConeType) Bounds() Bounds {
+	max := math.Abs(cone.Maximum)
+	if math.Abs(cone.Minimum) > max {
+		max = math.Abs(cone.Minimum)
+	}
 
-// 	return math.Pow(x, 2)+math.Pow(z, 2) <= 1
-// }
+	return Bounds{
+		Min: data.Point(-1*max, cone.Minimum, -1*max),
+		Max: data.Point(max, cone.Maximum, max),
+	}
+}
 
 func (cone *ConeType) intersectCaps(r data.RayType, xs IntersectionList) IntersectionList {
 	if !cone.Closed || data.FloatEqual(r.Direction.Y, 0) {

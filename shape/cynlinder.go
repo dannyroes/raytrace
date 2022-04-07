@@ -94,6 +94,13 @@ func (cyl *CylinderType) SetParent(p *GroupType) {
 	cyl.Parent = p
 }
 
+func (cyl *CylinderType) Bounds() Bounds {
+	return Bounds{
+		Min: data.Point(-1, cyl.Minimum, -1),
+		Max: data.Point(1, cyl.Maximum, 1),
+	}
+}
+
 func checkCap(r data.RayType, t, y float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z

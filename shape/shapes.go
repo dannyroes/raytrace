@@ -20,6 +20,7 @@ type Shape interface {
 	LocalNormalAt(data.Tuple) data.Tuple
 	GetParent() *GroupType
 	SetParent(*GroupType)
+	Bounds() Bounds
 }
 
 func Intersects(s Shape, r data.RayType) IntersectionList {
