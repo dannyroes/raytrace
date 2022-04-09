@@ -53,7 +53,7 @@ func hexScene() {
 
 	c := world.Camera(400, 300, math.Pi/3)
 
-	c.Transform = data.ViewTransform(data.Point(2, 2, 2), data.Point(0, 0, 0), data.Vector(0, 1, 0))
+	c.Transform = data.ViewTransform(data.Point(2, 2, 2), data.Point(0, 0.5, 0), data.Vector(0, 1, 0))
 
 	m := material.Material()
 	m.Colour = material.Colour(0.9, 0.3, 0.1)
@@ -65,8 +65,12 @@ func hexScene() {
 	h2 := hex(m)
 	h2.SetTransform(h2.GetTransform().RotateZ(math.Pi/2).Translate(-2, 0.5, 0))
 
+	m.Colour = material.Colour(0.1, 0.8, 0.1)
+	h3 := hex(m)
+	h3.SetTransform(h3.GetTransform().RotateX(math.Pi/2).Translate(0, 0.5, -2))
+
 	w.Objects = []shape.Shape{
-		h1, h2,
+		h1, h2, h3,
 	}
 	image := c.Render(w)
 
