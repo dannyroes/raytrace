@@ -54,7 +54,9 @@ func (g *GroupType) GetMaterial() material.MaterialType {
 }
 
 func (g *GroupType) SetMaterial(m material.MaterialType) {
-	g.Material = m
+	for _, o := range g.Children {
+		o.SetMaterial(m)
+	}
 }
 
 func (g *GroupType) GetTransform() data.Matrix {
