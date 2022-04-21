@@ -149,7 +149,7 @@ func TestSphereNormal(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		result := tc.s.LocalNormalAt(tc.p)
+		result := tc.s.LocalNormalAt(tc.p, IntersectionType{})
 
 		if !data.TupleEqual(result, result.Normalize()) {
 			t.Errorf("normal is not normalized expected %v received %v", result.Normalize(), result)

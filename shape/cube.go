@@ -42,7 +42,7 @@ func (c *CubeType) LocalIntersect(r data.RayType) IntersectionList {
 	return Intersections(Intersection(tmin, c), Intersection(tmax, c))
 }
 
-func (c *CubeType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (c *CubeType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
 	maxc := data.FloatMax(math.Abs(objectPoint.X), math.Abs(objectPoint.Y), math.Abs(objectPoint.Z))
 
 	if data.FloatEqual(maxc, math.Abs(objectPoint.X)) {

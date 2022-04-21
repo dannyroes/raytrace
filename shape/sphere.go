@@ -59,7 +59,7 @@ func (s *SphereType) GetTransform() data.Matrix {
 	return s.Transform
 }
 
-func (s *SphereType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (s *SphereType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
 	return objectPoint.Sub(data.Point(0, 0, 0))
 }
 

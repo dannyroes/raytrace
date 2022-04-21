@@ -45,7 +45,7 @@ func (g *GroupType) LocalIntersect(r data.RayType) IntersectionList {
 	return xs
 }
 
-func (g *GroupType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (g *GroupType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
 	panic("called localNormalAt on group")
 }
 

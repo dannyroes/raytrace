@@ -79,7 +79,7 @@ func (cone *ConeType) GetTransform() data.Matrix {
 	return cone.Transform
 }
 
-func (cone *ConeType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (cone *ConeType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
 	dist := math.Pow(objectPoint.X, 2) + math.Pow(objectPoint.Z, 2)
 	if dist < 1 && objectPoint.Y >= cone.Maximum-data.Epsilon {
 		return data.Vector(0, 1, 0)

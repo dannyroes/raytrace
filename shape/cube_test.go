@@ -141,7 +141,7 @@ func TestCubeNormal(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		result := c.LocalNormalAt(tc.p)
+		result := c.LocalNormalAt(tc.p, IntersectionType{})
 		if !data.TupleEqual(result, tc.expected) {
 			t.Errorf("Normal mismatch expected %v received %v", tc.expected, result)
 		}

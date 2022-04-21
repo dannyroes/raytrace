@@ -181,7 +181,7 @@ func TestGroupNormal(t *testing.T) {
 
 	expected := data.Vector(0.28570, 0.42854, -0.85716)
 
-	point := NormalAt(s, data.Point(1.7321, 1.1547, -5.5774))
+	point := NormalAt(s, data.Point(1.7321, 1.1547, -5.5774), IntersectionType{})
 	if !data.TupleEqual(point, expected) {
 		t.Errorf("Bad normal expected %v received %v", expected, point)
 	}

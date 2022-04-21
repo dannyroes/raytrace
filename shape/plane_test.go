@@ -16,7 +16,7 @@ func TestPlaneNormal(t *testing.T) {
 	}
 
 	for _, point := range points {
-		normal := p.LocalNormalAt(point)
+		normal := p.LocalNormalAt(point, IntersectionType{})
 
 		if !data.TupleEqual(data.Vector(0, 1, 0), normal) {
 			t.Errorf("Normal mismatch at %v expected %v received %v", point, data.Vector(0, 1, 0), normal)

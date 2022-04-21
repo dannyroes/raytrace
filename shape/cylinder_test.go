@@ -106,7 +106,7 @@ func TestCylinderNormal(t *testing.T) {
 
 	for _, tc := range cases {
 		c := Cylinder()
-		n := c.LocalNormalAt(tc.point)
+		n := c.LocalNormalAt(tc.point, IntersectionType{})
 
 		if !data.TupleEqual(n, tc.normal) {
 			t.Errorf("Normal mismatch expected %+v received %+v", tc.normal, n)
@@ -272,7 +272,7 @@ func TestCylinderEndcapNormal(t *testing.T) {
 		c.Minimum = 1
 		c.Maximum = 2
 		c.Closed = true
-		n := c.LocalNormalAt(tc.point)
+		n := c.LocalNormalAt(tc.point, IntersectionType{})
 
 		if !data.TupleEqual(n, tc.normal) {
 			t.Errorf("Normal mismatch expected %+v received %+v", tc.normal, n)

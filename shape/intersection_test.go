@@ -31,6 +31,42 @@ func TestIntersectionType(t *testing.T) {
 	}
 }
 
+func TestIntersectionWithUv(t *testing.T) {
+	cases := []struct {
+		s Shape
+		t float64
+		u float64
+		v float64
+	}{
+		{
+			s: Triangle(data.Point(0, 1, 0), data.Point(-1, 0, 0), data.Point(1, 0, 0)),
+			t: 3.5,
+			u: 0.2,
+			v: 0.4,
+		},
+	}
+
+	for _, tc := range cases {
+		i := IntersectionWithUv(tc.t, tc.s, tc.u, tc.v)
+
+		if !data.FloatEqual(tc.t, i.T) {
+			t.Errorf("T not equal expected %f received %F", tc.t, i.T)
+		}
+
+		if tc.s != i.Object {
+			t.Errorf("Object ID not equal expected %p received %p", tc.s, i.Object)
+		}
+
+		if tc.u != i.U {
+			t.Errorf("U not equal expected %f received %f", tc.u, i.U)
+		}
+
+		if tc.v != i.V {
+			t.Errorf("V ID not equal expected %f received %f", tc.v, i.V)
+		}
+	}
+}
+
 func TestIntersectionList(t *testing.T) {
 	s := Sphere()
 	i1 := Intersection(1, s)
@@ -285,7 +321,7 @@ func TestSchlick(t *testing.T) {
 			s: s,
 			r: data.Ray(data.Point(0, 0, math.Sqrt(2)/2), data.Vector(0, 1, 0)),
 			xs: IntersectionList{
-				{-math.Sqrt(2) / 2, s}, {math.Sqrt(2) / 2, s},
+				{T: -math.Sqrt(2) / 2, Object: s}, {T: math.Sqrt(2) / 2, Object: s},
 			},
 			i:        1,
 			expected: 1.0,
@@ -294,7 +330,7 @@ func TestSchlick(t *testing.T) {
 			s: s,
 			r: data.Ray(data.Point(0, 0, 0), data.Vector(0, 1, 0)),
 			xs: IntersectionList{
-				{-1, s}, {1, s},
+				{T: -1, Object: s}, {T: 1, Object: s},
 			},
 			i:        1,
 			expected: 0.04,
@@ -303,7 +339,7 @@ func TestSchlick(t *testing.T) {
 			s: s,
 			r: data.Ray(data.Point(0, 0.99, -2), data.Vector(0, 0, 1)),
 			xs: IntersectionList{
-				{1.8589, s},
+				{T: 1.8589, Object: s},
 			},
 			i:        0,
 			expected: 0.48873,

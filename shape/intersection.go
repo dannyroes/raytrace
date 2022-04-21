@@ -10,12 +10,18 @@ import (
 type IntersectionType struct {
 	T      float64
 	Object Shape
+	U      float64
+	V      float64
 }
 
 type IntersectionList []IntersectionType
 
 func Intersection(t float64, o Shape) IntersectionType {
 	return IntersectionType{T: t, Object: o}
+}
+
+func IntersectionWithUv(t float64, o Shape, u, v float64) IntersectionType {
+	return IntersectionType{T: t, Object: o, U: u, V: v}
 }
 
 func Intersections(ints ...IntersectionType) IntersectionList {
@@ -60,7 +66,7 @@ func (i IntersectionType) PrepareComputations(r data.RayType, xs ...Intersection
 	comp.Object = i.Object
 	comp.Point = r.Position(comp.T)
 	comp.EyeV = r.Direction.Neg()
-	comp.NormalV = NormalAt(comp.Object, comp.Point)
+	comp.NormalV = NormalAt(comp.Object, comp.Point, i)
 
 	if data.Dot(comp.NormalV, comp.EyeV) < 0 {
 		comp.Inside = true

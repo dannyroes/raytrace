@@ -79,7 +79,7 @@ func (cyl *CylinderType) GetTransform() data.Matrix {
 	return cyl.Transform
 }
 
-func (cyl *CylinderType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (cyl *CylinderType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
 	dist := math.Pow(objectPoint.X, 2) + math.Pow(objectPoint.Z, 2)
 	if dist < 1 && objectPoint.Y >= cyl.Maximum-data.Epsilon {
 		return data.Vector(0, 1, 0)

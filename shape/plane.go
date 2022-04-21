@@ -40,7 +40,7 @@ func (p *PlaneType) LocalIntersect(r data.RayType) IntersectionList {
 	return IntersectionList{Intersection(t, p)}
 }
 
-func (p *PlaneType) LocalNormalAt(point data.Tuple) data.Tuple {
+func (p *PlaneType) LocalNormalAt(point data.Tuple, i IntersectionType) data.Tuple {
 	return data.Vector(0, 1, 0)
 }
 

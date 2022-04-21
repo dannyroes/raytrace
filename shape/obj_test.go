@@ -85,6 +85,41 @@ func TestObjParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			file: "tests/normals.obj",
+			expected: OBJDetails{Normals: []data.Tuple{
+				data.Vector(0, 0, 1),
+				data.Vector(0.707, 0, -0.707),
+				data.Vector(1, 2, 3),
+			}, Groups: map[string]*GroupType{},
+			},
+		},
+		{
+			file: "tests/normal_faces.obj",
+			expected: OBJDetails{Ignored: 2, Vertices: []data.Tuple{
+				data.Point(0, 1, 0),
+				data.Point(-1, 0, 0),
+				data.Point(1, 0, 0),
+			},
+				Normals: []data.Tuple{
+					data.Vector(-1, 0, 0),
+					data.Vector(1, 0, 0),
+					data.Vector(0, 1, 0),
+				},
+				Groups: map[string]*GroupType{
+					"default_group": {
+						Children: []Shape{
+							SmoothTriangle(data.Point(0, 1, 0), data.Point(-1, 0, 0), data.Point(1, 0, 0),
+								data.Vector(0, 1, 0), data.Vector(-1, 0, 0), data.Vector(1, 0, 0),
+							),
+							SmoothTriangle(data.Point(0, 1, 0), data.Point(-1, 0, 0), data.Point(1, 0, 0),
+								data.Vector(0, 1, 0), data.Vector(-1, 0, 0), data.Vector(1, 0, 0),
+							),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range cases {
@@ -142,6 +177,12 @@ func OBJDetailsEqual(a, b OBJDetails) bool {
 		}
 	}
 
+	for i := range a.Normals {
+		if !data.TupleEqual(a.Normals[i], b.Normals[i]) {
+			return false
+		}
+	}
+
 	if len(a.Groups) != len(b.Groups) {
 		return false
 	}
@@ -166,5 +207,7 @@ func OBJDetailsEqual(a, b OBJDetails) bool {
 }
 
 func triangleEqual(a, b *TriangleType) bool {
-	return data.TupleEqual(a.p1, b.p1) && data.TupleEqual(a.p2, b.p2) && data.TupleEqual(a.p3, b.p3)
+	return data.TupleEqual(a.p1, b.p1) && data.TupleEqual(a.p2, b.p2) && data.TupleEqual(a.p3, b.p3) &&
+		data.TupleEqual(a.n1, b.n1) && data.TupleEqual(a.n2, b.n2) && data.TupleEqual(a.n3, b.n3) &&
+		a.smooth == b.smooth
 }

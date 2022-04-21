@@ -15,10 +15,27 @@ type TriangleType struct {
 	e1     data.Tuple
 	e2     data.Tuple
 	normal data.Tuple
+	smooth bool
+	n1     data.Tuple
+	n2     data.Tuple
+	n3     data.Tuple
 }
 
 func Triangle(p1, p2, p3 data.Tuple) *TriangleType {
 	t := &TriangleType{p1: p1, p2: p2, p3: p3,
+		ShapeType: ShapeType{
+			Material:  material.Material(),
+			Transform: data.IdentityMatrix(),
+		},
+	}
+	t.compute()
+
+	return t
+}
+
+func SmoothTriangle(p1, p2, p3, n1, n2, n3 data.Tuple) *TriangleType {
+	t := &TriangleType{p1: p1, p2: p2, p3: p3, n1: n1, n2: n2, n3: n3,
+		smooth: true,
 		ShapeType: ShapeType{
 			Material:  material.Material(),
 			Transform: data.IdentityMatrix(),
@@ -36,7 +53,10 @@ func (t *TriangleType) compute() {
 	t.normal = data.Cross(t.e2, t.e1).Normalize()
 }
 
-func (t *TriangleType) LocalNormalAt(objectPoint data.Tuple) data.Tuple {
+func (t *TriangleType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) data.Tuple {
+	if t.smooth {
+		return t.n2.Mul(i.U).Add(t.n3.Mul(i.V)).Add(t.n1.Mul(1 - i.U - i.V))
+	}
 	return t.normal
 }
 
@@ -65,7 +85,7 @@ func (t *TriangleType) LocalIntersect(r data.RayType) IntersectionList {
 	}
 
 	time := f * data.Dot(t.e2, originCrossE1)
-	return Intersections(Intersection(time, t))
+	return Intersections(IntersectionWithUv(time, t, u, v))
 }
 
 func (t *TriangleType) GetParent() *GroupType {

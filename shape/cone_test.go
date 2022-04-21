@@ -139,7 +139,7 @@ func TestConeNormal(t *testing.T) {
 
 	for _, tc := range cases {
 		c := Cone()
-		n := c.LocalNormalAt(tc.point)
+		n := c.LocalNormalAt(tc.point, IntersectionType{})
 
 		if !data.TupleEqual(n, tc.normal) {
 			t.Errorf("Normal mismatch expected %+v received %+v", tc.normal, n)

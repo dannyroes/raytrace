@@ -35,7 +35,7 @@ func (s *MockShape) LocalIntersect(r data.RayType) IntersectionList {
 	return IntersectionList{}
 }
 
-func (s *MockShape) LocalNormalAt(t data.Tuple) data.Tuple {
+func (s *MockShape) LocalNormalAt(t data.Tuple, i IntersectionType) data.Tuple {
 	return data.Vector(t.X, t.Y, t.Z)
 }
 
@@ -109,7 +109,7 @@ func TestNormalAt(t *testing.T) {
 		s := &MockShape{}
 		s.SetTransform(tc.t)
 
-		result := NormalAt(s, tc.p)
+		result := NormalAt(s, tc.p, IntersectionType{})
 
 		if !data.TupleEqual(tc.expected, result) {
 			t.Errorf("Normal at mismatch expected %v received %v", tc.expected, result)

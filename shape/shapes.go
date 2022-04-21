@@ -17,7 +17,7 @@ type Shape interface {
 	GetTransform() data.Matrix
 	SetTransform(data.Matrix)
 	LocalIntersect(data.RayType) IntersectionList
-	LocalNormalAt(data.Tuple) data.Tuple
+	LocalNormalAt(data.Tuple, IntersectionType) data.Tuple
 	GetParent() *GroupType
 	SetParent(*GroupType)
 	Bounds() Bounds
@@ -28,9 +28,9 @@ func Intersects(s Shape, r data.RayType) IntersectionList {
 	return s.LocalIntersect(r)
 }
 
-func NormalAt(s Shape, p data.Tuple) data.Tuple {
+func NormalAt(s Shape, p data.Tuple, i IntersectionType) data.Tuple {
 	localPoint := worldToObject(s, p)
-	objectNormal := s.LocalNormalAt(localPoint)
+	objectNormal := s.LocalNormalAt(localPoint, i)
 
 	return normalToWorld(s, objectNormal)
 }
