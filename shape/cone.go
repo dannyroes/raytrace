@@ -97,11 +97,11 @@ func (cone *ConeType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) 
 	return data.Vector(objectPoint.X, y, objectPoint.Z)
 }
 
-func (cone *ConeType) GetParent() *GroupType {
+func (cone *ConeType) GetParent() Shape {
 	return cone.Parent
 }
 
-func (cone *ConeType) SetParent(p *GroupType) {
+func (cone *ConeType) SetParent(p Shape) {
 	cone.Parent = p
 }
 

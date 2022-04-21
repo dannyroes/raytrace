@@ -67,11 +67,11 @@ func (g *GroupType) SetTransform(m data.Matrix) {
 	g.Transform = m
 }
 
-func (g *GroupType) GetParent() *GroupType {
+func (g *GroupType) GetParent() Shape {
 	return g.Parent
 }
 
-func (g *GroupType) SetParent(p *GroupType) {
+func (g *GroupType) SetParent(p Shape) {
 	g.Parent = p
 }
 

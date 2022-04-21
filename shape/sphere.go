@@ -63,11 +63,11 @@ func (s *SphereType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) d
 	return objectPoint.Sub(data.Point(0, 0, 0))
 }
 
-func (s *SphereType) GetParent() *GroupType {
+func (s *SphereType) GetParent() Shape {
 	return s.Parent
 }
 
-func (s *SphereType) SetParent(p *GroupType) {
+func (s *SphereType) SetParent(p Shape) {
 	s.Parent = p
 }
 

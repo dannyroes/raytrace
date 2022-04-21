@@ -8,7 +8,7 @@ import (
 type ShapeType struct {
 	Transform data.Matrix
 	Material  material.MaterialType
-	Parent    *GroupType
+	Parent    Shape
 }
 
 type Shape interface {
@@ -18,8 +18,8 @@ type Shape interface {
 	SetTransform(data.Matrix)
 	LocalIntersect(data.RayType) IntersectionList
 	LocalNormalAt(data.Tuple, IntersectionType) data.Tuple
-	GetParent() *GroupType
-	SetParent(*GroupType)
+	GetParent() Shape
+	SetParent(Shape)
 	Bounds() Bounds
 }
 

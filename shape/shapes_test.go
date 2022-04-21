@@ -12,7 +12,7 @@ type MockShape struct{}
 
 var savedRay data.RayType
 var transform data.Matrix
-var parent *GroupType
+var parent Shape
 
 func (s *MockShape) GetMaterial() material.MaterialType {
 	return material.Material()
@@ -39,11 +39,11 @@ func (s *MockShape) LocalNormalAt(t data.Tuple, i IntersectionType) data.Tuple {
 	return data.Vector(t.X, t.Y, t.Z)
 }
 
-func (s *MockShape) GetParent() *GroupType {
+func (s *MockShape) GetParent() Shape {
 	return parent
 }
 
-func (s *MockShape) SetParent(p *GroupType) {
+func (s *MockShape) SetParent(p Shape) {
 	parent = p
 }
 

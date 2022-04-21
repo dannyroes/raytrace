@@ -92,11 +92,11 @@ func (cyl *CylinderType) LocalNormalAt(objectPoint data.Tuple, i IntersectionTyp
 	return data.Vector(objectPoint.X, 0, objectPoint.Z)
 }
 
-func (cyl *CylinderType) GetParent() *GroupType {
+func (cyl *CylinderType) GetParent() Shape {
 	return cyl.Parent
 }
 
-func (cyl *CylinderType) SetParent(p *GroupType) {
+func (cyl *CylinderType) SetParent(p Shape) {
 	cyl.Parent = p
 }
 

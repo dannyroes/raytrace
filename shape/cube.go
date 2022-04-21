@@ -54,11 +54,11 @@ func (c *CubeType) LocalNormalAt(objectPoint data.Tuple, i IntersectionType) dat
 	return data.Vector(0, 0, objectPoint.Z)
 }
 
-func (c *CubeType) GetParent() *GroupType {
+func (c *CubeType) GetParent() Shape {
 	return c.Parent
 }
 
-func (c *CubeType) SetParent(p *GroupType) {
+func (c *CubeType) SetParent(p Shape) {
 	c.Parent = p
 }
 

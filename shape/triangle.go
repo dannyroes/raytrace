@@ -88,11 +88,11 @@ func (t *TriangleType) LocalIntersect(r data.RayType) IntersectionList {
 	return Intersections(IntersectionWithUv(time, t, u, v))
 }
 
-func (t *TriangleType) GetParent() *GroupType {
+func (t *TriangleType) GetParent() Shape {
 	return t.Parent
 }
 
-func (t *TriangleType) SetParent(p *GroupType) {
+func (t *TriangleType) SetParent(p Shape) {
 	t.Parent = p
 }
 

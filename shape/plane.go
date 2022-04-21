@@ -44,11 +44,11 @@ func (p *PlaneType) LocalNormalAt(point data.Tuple, i IntersectionType) data.Tup
 	return data.Vector(0, 1, 0)
 }
 
-func (p *PlaneType) GetParent() *GroupType {
+func (p *PlaneType) GetParent() Shape {
 	return p.Parent
 }
 
-func (p *PlaneType) SetParent(parent *GroupType) {
+func (p *PlaneType) SetParent(parent Shape) {
 	p.Parent = parent
 }
 
