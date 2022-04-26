@@ -107,6 +107,10 @@ func (cyl *CylinderType) Bounds() Bounds {
 	}
 }
 
+func (cyl *CylinderType) CastsShadow() bool {
+	return !cyl.DisableShadow
+}
+
 func checkCap(r data.RayType, t, y float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z

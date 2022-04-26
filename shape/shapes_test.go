@@ -54,6 +54,10 @@ func (s *MockShape) Bounds() Bounds {
 	}
 }
 
+func (s *MockShape) CastsShadow() bool {
+	return true
+}
+
 func TestIntersect(t *testing.T) {
 	cases := []struct {
 		t        data.Matrix

@@ -110,6 +110,10 @@ func (g *GroupType) Bounds() Bounds {
 	return *g.GroupBounds
 }
 
+func (group *GroupType) CastsShadow() bool {
+	return !group.DisableShadow
+}
+
 func (g *GroupType) boundIntersect(r data.RayType) bool {
 	b := g.Bounds()
 

@@ -77,3 +77,7 @@ func (s *SphereType) Bounds() Bounds {
 		Max: data.Point(1, 1, 1),
 	}
 }
+
+func (s *SphereType) CastsShadow() bool {
+	return !s.DisableShadow
+}

@@ -91,7 +91,7 @@ func (w WorldType) IsShadowed(p data.Tuple, lightIndex int) bool {
 	intersections := w.Intersect(r)
 
 	h := intersections.Hit()
-	if h.Object != nil && h.T < distance {
+	if h.Object != nil && h.T < distance && h.Object.CastsShadow() {
 		return true
 	}
 

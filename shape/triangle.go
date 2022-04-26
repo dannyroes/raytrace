@@ -124,3 +124,7 @@ func (t *TriangleType) GetTransform() data.Matrix {
 func (t *TriangleType) SetTransform(m data.Matrix) {
 	t.Transform = m
 }
+
+func (t *TriangleType) CastsShadow() bool {
+	return !t.DisableShadow
+}

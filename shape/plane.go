@@ -58,3 +58,7 @@ func (p *PlaneType) Bounds() Bounds {
 		Max: data.Point(math.Inf(1), 0, math.Inf(1)),
 	}
 }
+
+func (p *PlaneType) CastsShadow() bool {
+	return !p.DisableShadow
+}

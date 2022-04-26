@@ -78,6 +78,10 @@ func (c *CubeType) Bounds() Bounds {
 	}
 }
 
+func (c *CubeType) CastsShadow() bool {
+	return !c.DisableShadow
+}
+
 func checkAxis(origin, direction float64) (float64, float64) {
 	tminNum := -1 - origin
 	tmaxNum := 1 - origin

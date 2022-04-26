@@ -6,9 +6,10 @@ import (
 )
 
 type ShapeType struct {
-	Transform data.Matrix
-	Material  material.MaterialType
-	Parent    Shape
+	Transform     data.Matrix
+	Material      material.MaterialType
+	Parent        Shape
+	DisableShadow bool
 }
 
 type Shape interface {
@@ -21,6 +22,7 @@ type Shape interface {
 	GetParent() Shape
 	SetParent(Shape)
 	Bounds() Bounds
+	CastsShadow() bool
 }
 
 func Intersects(s Shape, r data.RayType) IntersectionList {

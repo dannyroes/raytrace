@@ -117,6 +117,10 @@ func (cone *ConeType) Bounds() Bounds {
 	}
 }
 
+func (cone *ConeType) CastsShadow() bool {
+	return !cone.DisableShadow
+}
+
 func (cone *ConeType) intersectCaps(r data.RayType, xs IntersectionList) IntersectionList {
 	if !cone.Closed || data.FloatEqual(r.Direction.Y, 0) {
 		return xs
