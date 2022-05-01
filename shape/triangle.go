@@ -85,7 +85,12 @@ func (t *TriangleType) LocalIntersect(r data.RayType) IntersectionList {
 	}
 
 	time := f * data.Dot(t.e2, originCrossE1)
-	return Intersections(IntersectionWithUv(time, t, u, v))
+	if t.smooth {
+		return Intersections(IntersectionWithUv(time, t, u, v))
+	} else {
+		return Intersections(Intersection(time, t))
+	}
+
 }
 
 func (t *TriangleType) GetParent() Shape {

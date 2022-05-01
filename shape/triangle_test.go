@@ -1,6 +1,7 @@
 package shape
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dannyroes/raytrace/data"
@@ -143,7 +144,8 @@ func TestTriangleIntersect(t *testing.T) {
 			expected: Intersections(Intersection(2, &TriangleType{})),
 		},
 		{
-			t:        Triangle(data.Point(0, 1, 0), data.Point(-1, 0, 0), data.Point(1, 0, 0)),
+			t: SmoothTriangle(data.Point(0, 1, 0), data.Point(-1, 0, 0), data.Point(1, 0, 0),
+				data.Vector(0, 1, 0), data.Vector(-1, 0, 0), data.Vector(1, 0, 0)),
 			r:        data.Ray(data.Point(-0.2, 0.3, -2), data.Vector(0, 0, 1)),
 			expected: Intersections(IntersectionWithUv(2, &TriangleType{}, 0.45, 0.25)),
 		},
@@ -151,7 +153,6 @@ func TestTriangleIntersect(t *testing.T) {
 
 	for _, tc := range cases {
 		xs := tc.t.LocalIntersect(tc.r)
-
 		if len(xs) != len(tc.expected) {
 			t.Errorf("Intersections len mismatch expected %d received %d", len(tc.expected), len(xs))
 		}
@@ -161,11 +162,12 @@ func TestTriangleIntersect(t *testing.T) {
 				t.Errorf("Intersection %d t mismatch expected %.2f received %.2f", i, tc.expected[i].T, x.T)
 			}
 
-			if x.U != tc.expected[i].U {
+			if !data.FloatEqual(x.U, tc.expected[i].U) {
+				fmt.Printf("Failed: %+v", tc.expected[i])
 				t.Errorf("Intersection %d u mismatch expected %.2f received %.2f", i, tc.expected[i].U, x.U)
 			}
 
-			if x.V != tc.expected[i].V {
+			if !data.FloatEqual(x.V, tc.expected[i].V) {
 				t.Errorf("Intersection %d v mismatch expected %.2f received %.2f", i, tc.expected[i].V, x.V)
 			}
 		}
